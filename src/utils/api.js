@@ -19,6 +19,7 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+
         if (
             error.response &&
             error.response.status === 401 &&
@@ -28,7 +29,13 @@ api.interceptors.response.use(
 
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
-                const res = await api.post("/auth/refresh", { refreshToken });
+
+                const res = await axios.post(
+                    "http://localhost:5000/auth/refresh",
+                    {
+                        refreshToken,
+                    }
+                );
 
                 const newAccessToken = res.data.accessToken;
                 localStorage.setItem("accessToken", newAccessToken);
