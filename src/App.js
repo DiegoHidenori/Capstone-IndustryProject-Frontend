@@ -12,6 +12,10 @@ import RoomsList from "./pages/room/RoomsList";
 import CreateRoom from "./pages/room/CreateRoom";
 import EditRoom from "./pages/room/EditRoom";
 import RoomDetails from "./pages/room/RoomDetails";
+import MealsList from "./pages/meal/MealsList";
+import CreateMeal from "./pages/meal/CreateMeal";
+import EditMeal from "./pages/meal/EditMeal";
+import MealDetails from "./pages/meal/MealDetails";
 
 function App() {
     return (
@@ -37,6 +41,10 @@ function App() {
                     <Route path="/rooms/:roomId" element={<RoomDetails />} />
                     <Route path="/rooms/new" element={<CreateRoom />} />
                     <Route path="/rooms/:roomId/edit" element={<EditRoom />} />
+                    <Route path="/meals" element={<MealsList />} />
+                    <Route path="/meals/:mealId" element={<MealDetails />} />
+                    <Route path="/meals/create-meal" element={<CreateMeal />} />
+                    <Route path="/meals/:mealId/edit" element={<EditMeal />} />
                 </Route>
             </Routes>
         </Router>

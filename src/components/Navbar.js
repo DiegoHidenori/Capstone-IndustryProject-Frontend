@@ -25,6 +25,9 @@ export default function Navbar() {
                         <Link to="/rooms">Rooms</Link>
                     )}
                     <Link to="/create-booking">New Booking</Link>
+                    {["admin", "staff"].includes(user.role) && (
+                        <Link to="/meals">Meals</Link>
+                    )}
                     <button onClick={handleLogout}>Logout</button>
                 </>
             ) : (
