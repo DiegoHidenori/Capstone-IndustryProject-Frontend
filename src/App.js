@@ -16,6 +16,10 @@ import MealsList from "./pages/meal/MealsList";
 import CreateMeal from "./pages/meal/CreateMeal";
 import EditMeal from "./pages/meal/EditMeal";
 import MealDetails from "./pages/meal/MealDetails";
+import DiscountsList from "./pages/discount/DiscountsList";
+import CreateDiscount from "./pages/discount/CreateDiscount";
+import EditDiscount from "./pages/discount/EditDiscount";
+import DiscountDetails from "./pages/discount/DiscountDetails";
 
 function App() {
     return (
@@ -45,6 +49,19 @@ function App() {
                     <Route path="/meals/:mealId" element={<MealDetails />} />
                     <Route path="/meals/create-meal" element={<CreateMeal />} />
                     <Route path="/meals/:mealId/edit" element={<EditMeal />} />
+                    <Route path="/discounts" element={<DiscountsList />} />
+                    <Route
+                        path="/discounts/create-discount"
+                        element={<CreateDiscount />}
+                    />
+                    <Route
+                        path="/discounts/:discountId/edit"
+                        element={<EditDiscount />}
+                    />
+                    <Route
+                        path="/discounts/:discountId"
+                        element={<DiscountDetails />}
+                    />
                 </Route>
             </Routes>
         </Router>
