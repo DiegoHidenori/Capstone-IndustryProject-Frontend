@@ -19,10 +19,10 @@ export default function Navbar() {
                 <>
                     <Link to="/dashboard">Dashboard</Link>
                     {["admin", "staff"].includes(user.role) && (
-                        <Link to="/bookings">All Bookings</Link>
+                        <Link to="/bookings">Bookings</Link>
                     )}
                     {["admin", "staff"].includes(user.role) && (
-                        <Link to="/rooms">All Rooms</Link>
+                        <Link to="/rooms">Rooms</Link>
                     )}
                     <Link to="/create-booking">New Booking</Link>
                     <button onClick={handleLogout}>Logout</button>
