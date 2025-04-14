@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import api from "../../utils/api";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -13,13 +13,12 @@ const CreateBooking = () => {
         checkoutDate: "",
         hasOvernight: false,
         firstMeal: "",
-        requirements: "",
+        requirements: [],
         staffNotes: "",
-        participantsList: "",
+        participantsList: [],
         roomIds: [],
         mealIds: [],
         discountIds: [],
-        bookingPrice: "",
     });
 
     const handleChange = (e) => {
@@ -33,11 +32,15 @@ const CreateBooking = () => {
     const handleArrayChange = (e, key) => {
         const values = e.target.value
             .split(",")
-            .map((v) => parseInt(v.trim()))
-            .filter((v) => !isNaN(v));
+            .map((v) => v.trim())
+            .filter(Boolean);
+
         setFormData((prev) => ({
             ...prev,
-            [key]: values,
+            [key]:
+                key === "requirements" || key === "participantsList"
+                    ? values
+                    : values.map(Number),
         }));
     };
 
@@ -60,17 +63,21 @@ const CreateBooking = () => {
             const payload = {
                 ...formData,
                 userId,
+                requirements: formData.requirements || [],
+                participantsList: formData.participantsList || [],
             };
 
             const res = await api.post("/api/bookings", payload);
 
-            alert("Booking created!");
-            navigate("/dashboard"); // or redirect to /bookings
+            const price = parseFloat(res.data.bookingPrice || 0).toFixed(2);
+            alert(`Booking created! Final Price: $${price}`);
+
+            navigate("/dashboard");
         } catch (err) {
             if (err.response?.status === 409) {
                 const data = err.response.data;
                 setErrorMessage(data.message);
-                setConflictingRooms(data.conflictingRoomIds || []);
+                setConflictingRooms(data.conflictRoomIds || []);
             } else {
                 console.error("Booking failed:", err);
                 setErrorMessage("Booking failed. Please try again.");
@@ -106,6 +113,7 @@ const CreateBooking = () => {
                     <input
                         type="date"
                         name="checkinDate"
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                     />
                 </label>
@@ -115,6 +123,7 @@ const CreateBooking = () => {
                     <input
                         type="date"
                         name="checkoutDate"
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                     />
                 </label>
@@ -141,15 +150,7 @@ const CreateBooking = () => {
                     Requirements (comma-separated):
                     <input
                         type="text"
-                        onChange={(e) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                requirements: e.target.value
-                                    .split(",")
-                                    .map((val) => val.trim())
-                                    .filter(Boolean),
-                            }))
-                        }
+                        onChange={(e) => handleArrayChange(e, "requirements")}
                     />
                 </label>
 
@@ -166,23 +167,8 @@ const CreateBooking = () => {
                     <input
                         type="text"
                         onChange={(e) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                participantsList: e.target.value
-                                    .split(",")
-                                    .map((val) => val.trim())
-                                    .filter(Boolean),
-                            }))
+                            handleArrayChange(e, "participantsList")
                         }
-                    />
-                </label>
-
-                <label>
-                    Booking Price:
-                    <input
-                        type="number"
-                        name="bookingPrice"
-                        onChange={handleChange}
                     />
                 </label>
 

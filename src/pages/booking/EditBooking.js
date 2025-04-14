@@ -17,7 +17,6 @@ export default function EditBooking() {
         roomIds: [],
         mealIds: [],
         discountIds: [],
-        bookingPrice: "",
     });
 
     const [error, setError] = useState("");
@@ -40,7 +39,6 @@ export default function EditBooking() {
                     roomIds: b.Rooms?.map((r) => r.roomId) || [],
                     mealIds: b.Meals?.map((m) => m.mealId) || [],
                     discountIds: b.Discounts?.map((d) => d.discountId) || [],
-                    bookingPrice: b.finalPrice || "",
                 });
             } catch (err) {
                 console.error("Error loading booking", err);
@@ -63,7 +61,7 @@ export default function EditBooking() {
         const values = e.target.value
             .split(",")
             .map((v) => v.trim())
-            .filter((v) => v !== "");
+            .filter(Boolean);
 
         setFormData((prev) => ({
             ...prev,
@@ -80,13 +78,19 @@ export default function EditBooking() {
         setConflictingRooms([]);
 
         try {
-            await api.put(`/api/bookings/${bookingId}`, formData);
+            const payload = {
+                ...formData,
+                requirements: formData.requirements || [],
+                participantsList: formData.participantsList || [],
+            };
+
+            await api.put(`/api/bookings/${bookingId}`, payload);
             alert("Booking updated!");
             navigate("/bookings");
         } catch (err) {
             if (err.response?.status === 409) {
                 setError(err.response.data.message);
-                setConflictingRooms(err.response.data.conflictingRoomIds || []);
+                setConflictingRooms(err.response.data.conflictRoomIds || []);
             } else {
                 console.error("Update failed:", err);
                 setError("Failed to update booking.");
@@ -123,6 +127,7 @@ export default function EditBooking() {
                         type="date"
                         name="checkinDate"
                         value={formData.checkinDate}
+                        min={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                     />
                 </label>
@@ -133,6 +138,7 @@ export default function EditBooking() {
                         type="date"
                         name="checkoutDate"
                         value={formData.checkoutDate}
+                        min={formData.checkinDate}
                         onChange={handleChange}
                     />
                 </label>
@@ -183,16 +189,6 @@ export default function EditBooking() {
                         onChange={(e) =>
                             handleArrayChange(e, "participantsList")
                         }
-                    />
-                </label>
-
-                <label>
-                    Booking Price:
-                    <input
-                        type="number"
-                        name="bookingPrice"
-                        value={formData.bookingPrice}
-                        onChange={handleChange}
                     />
                 </label>
 

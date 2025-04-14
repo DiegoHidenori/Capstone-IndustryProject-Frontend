@@ -31,7 +31,7 @@ api.interceptors.response.use(
                 const refreshToken = localStorage.getItem("refreshToken");
 
                 const res = await axios.post(
-                    "http://localhost:5000/auth/refresh",
+                    "http://localhost:5000/api/auth/refresh",
                     {
                         refreshToken,
                     }
@@ -40,7 +40,7 @@ api.interceptors.response.use(
                 const newAccessToken = res.data.accessToken;
                 localStorage.setItem("accessToken", newAccessToken);
 
-                api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+                // api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
                 return api(originalRequest);
@@ -49,6 +49,7 @@ api.interceptors.response.use(
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 window.location.href = "/login";
+                return Promise.reject(refreshError);
             }
         }
 

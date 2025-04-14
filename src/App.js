@@ -20,6 +20,9 @@ import DiscountsList from "./pages/discount/DiscountsList";
 import CreateDiscount from "./pages/discount/CreateDiscount";
 import EditDiscount from "./pages/discount/EditDiscount";
 import DiscountDetails from "./pages/discount/DiscountDetails";
+import UsersList from "./pages/user/UsersList";
+import UserDetails from "./pages/user/UserDetails";
+import EditUser from "./pages/user/EditUser";
 
 function App() {
     return (
@@ -62,6 +65,9 @@ function App() {
                         path="/discounts/:discountId"
                         element={<DiscountDetails />}
                     />
+                    <Route path="/users" element={<UsersList />} />
+                    <Route path="/users/:userId" element={<UserDetails />} />
+                    <Route path="/users/:userId/edit" element={<EditUser />} />
                 </Route>
             </Routes>
         </Router>
