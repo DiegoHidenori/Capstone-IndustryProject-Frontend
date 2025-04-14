@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/BookingForm.css";
 
 export default function EditBooking() {
     const { bookingId } = useParams();
@@ -19,14 +20,28 @@ export default function EditBooking() {
         discountIds: [],
     });
 
+    const [meals, setMeals] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
     const [error, setError] = useState("");
     const [conflictingRooms, setConflictingRooms] = useState([]);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
-        const fetchBooking = async () => {
+        const fetchBookingAndData = async () => {
             try {
-                const res = await api.get(`/api/bookings/${bookingId}`);
-                const b = res.data;
+                const [bookingRes, mealsRes, roomsRes, discountsRes] =
+                    await Promise.all([
+                        api.get(`/api/bookings/${bookingId}`),
+                        api.get("/api/meals"),
+                        api.get("/api/rooms"),
+                        api.get("/api/discounts"),
+                    ]);
+
+                const b = bookingRes.data;
+                setMeals(mealsRes.data);
+                setRooms(roomsRes.data);
+                setDiscounts(discountsRes.data);
 
                 setFormData({
                     checkinDate: b.checkinDate?.slice(0, 10) || "",
@@ -46,7 +61,7 @@ export default function EditBooking() {
             }
         };
 
-        fetchBooking();
+        fetchBookingAndData();
     }, [bookingId]);
 
     const handleChange = (e) => {
@@ -57,25 +72,44 @@ export default function EditBooking() {
         }));
     };
 
-    const handleArrayChange = (e, key) => {
+    const handleMultiSelectChange = (e, key) => {
+        const selected = Array.from(e.target.selectedOptions).map((o) =>
+            parseInt(o.value)
+        );
+        setFormData((prev) => ({ ...prev, [key]: selected }));
+    };
+
+    const handleArrayInput = (e, key) => {
         const values = e.target.value
             .split(",")
             .map((v) => v.trim())
             .filter(Boolean);
+        setFormData((prev) => ({ ...prev, [key]: values }));
+    };
 
-        setFormData((prev) => ({
-            ...prev,
-            [key]:
-                key === "requirements" || key === "participantsList"
-                    ? values
-                    : values.map(Number),
-        }));
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.checkinDate)
+            newErrors.checkinDate = "Check-in is required";
+        if (!formData.checkoutDate)
+            newErrors.checkoutDate = "Check-out is required";
+        if (!formData.firstMeal) newErrors.firstMeal = "First meal is required";
+        if (!formData.roomIds?.length)
+            newErrors.roomIds = "Select at least one room";
+        return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setErrors({});
         setConflictingRooms([]);
+
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
 
         try {
             const payload = {
@@ -99,18 +133,11 @@ export default function EditBooking() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
+        <div className="booking-form-container">
             <h2>Edit Booking #{bookingId}</h2>
 
             {error && (
-                <div
-                    style={{
-                        backgroundColor: "#ffe0e0",
-                        padding: "1rem",
-                        borderRadius: "8px",
-                        marginBottom: "1rem",
-                    }}
-                >
+                <div className="booking-error-box">
                     <strong>{error}</strong>
                     {conflictingRooms.length > 0 && (
                         <p>
@@ -120,7 +147,7 @@ export default function EditBooking() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="booking-form">
                 <label>
                     Check-in Date:
                     <input
@@ -130,6 +157,9 @@ export default function EditBooking() {
                         min={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                     />
+                    {errors.checkinDate && (
+                        <p className="error">{errors.checkinDate}</p>
+                    )}
                 </label>
 
                 <label>
@@ -141,6 +171,28 @@ export default function EditBooking() {
                         min={formData.checkinDate}
                         onChange={handleChange}
                     />
+                    {errors.checkoutDate && (
+                        <p className="error">{errors.checkoutDate}</p>
+                    )}
+                </label>
+
+                <label>
+                    First Meal:
+                    <select
+                        name="firstMeal"
+                        value={formData.firstMeal}
+                        onChange={handleChange}
+                    >
+                        <option value="">-- Select First Meal --</option>
+                        {meals.map((m) => (
+                            <option key={m.mealId} value={m.name}>
+                                {m.name}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.firstMeal && (
+                        <p className="error">{errors.firstMeal}</p>
+                    )}
                 </label>
 
                 <label>
@@ -154,13 +206,53 @@ export default function EditBooking() {
                 </label>
 
                 <label>
-                    First Meal:
-                    <input
-                        type="text"
-                        name="firstMeal"
-                        value={formData.firstMeal}
-                        onChange={handleChange}
-                    />
+                    Rooms:
+                    <select
+                        multiple
+                        value={formData.roomIds}
+                        onChange={(e) => handleMultiSelectChange(e, "roomIds")}
+                    >
+                        {rooms.map((room) => (
+                            <option key={room.roomId} value={room.roomId}>
+                                {room.roomName} ({room.roomType})
+                            </option>
+                        ))}
+                    </select>
+                    {errors.roomIds && (
+                        <p className="error">{errors.roomIds}</p>
+                    )}
+                </label>
+
+                <label>
+                    Meals:
+                    <select
+                        multiple
+                        value={formData.mealIds}
+                        onChange={(e) => handleMultiSelectChange(e, "mealIds")}
+                    >
+                        {meals.map((meal) => (
+                            <option key={meal.mealId} value={meal.mealId}>
+                                {meal.name} — ${meal.price}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    Discounts:
+                    <select
+                        multiple
+                        value={formData.discountIds}
+                        onChange={(e) =>
+                            handleMultiSelectChange(e, "discountIds")
+                        }
+                    >
+                        {discounts.map((d) => (
+                            <option key={d.discountId} value={d.discountId}>
+                                {d.name} ({d.discountType} {d.discountValue})
+                            </option>
+                        ))}
+                    </select>
                 </label>
 
                 <label>
@@ -168,7 +260,18 @@ export default function EditBooking() {
                     <input
                         type="text"
                         value={formData.requirements.join(", ")}
-                        onChange={(e) => handleArrayChange(e, "requirements")}
+                        onChange={(e) => handleArrayInput(e, "requirements")}
+                    />
+                </label>
+
+                <label>
+                    Participants (comma-separated):
+                    <input
+                        type="text"
+                        value={formData.participantsList.join(", ")}
+                        onChange={(e) =>
+                            handleArrayInput(e, "participantsList")
+                        }
                     />
                 </label>
 
@@ -181,47 +284,7 @@ export default function EditBooking() {
                     ></textarea>
                 </label>
 
-                <label>
-                    Participants List (comma-separated):
-                    <input
-                        type="text"
-                        value={formData.participantsList.join(", ")}
-                        onChange={(e) =>
-                            handleArrayChange(e, "participantsList")
-                        }
-                    />
-                </label>
-
-                <label>
-                    Room IDs (comma-separated):
-                    <input
-                        type="text"
-                        value={formData.roomIds.join(", ")}
-                        onChange={(e) => handleArrayChange(e, "roomIds")}
-                    />
-                </label>
-
-                <label>
-                    Meal IDs (comma-separated):
-                    <input
-                        type="text"
-                        value={formData.mealIds.join(", ")}
-                        onChange={(e) => handleArrayChange(e, "mealIds")}
-                    />
-                </label>
-
-                <label>
-                    Discount IDs (comma-separated):
-                    <input
-                        type="text"
-                        value={formData.discountIds.join(", ")}
-                        onChange={(e) => handleArrayChange(e, "discountIds")}
-                    />
-                </label>
-
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Update Booking
-                </button>
+                <button type="submit">Update Booking</button>
             </form>
         </div>
     );

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
 import { Link } from "react-router-dom";
+import "../../styles/BookingsList.css";
 
 const BookingsList = () => {
     const { user } = useAuth();
@@ -48,9 +49,9 @@ const BookingsList = () => {
     };
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="bookings-container">
             <h2>Bookings</h2>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className="bookings-table">
                 <thead>
                     <tr>
                         <th>Booking ID</th>
@@ -66,7 +67,11 @@ const BookingsList = () => {
                     {bookings.map((booking) => (
                         <tr key={booking.bookingId}>
                             <td>{booking.bookingId}</td>
-                            <td>{booking.bookingDate}</td>
+                            <td>
+                                {new Date(
+                                    booking.bookingDate
+                                ).toLocaleDateString()}
+                            </td>
                             <td>{booking.userId}</td>
                             <td>
                                 {new Date(
@@ -81,27 +86,19 @@ const BookingsList = () => {
                             <td>
                                 ${parseFloat(booking.bookingPrice).toFixed(2)}
                             </td>
-                            <td>
+                            <td className="bookings-actions">
                                 <Link to={`/bookings/${booking.bookingId}`}>
                                     View
-                                </Link>{" "}
-                                |{" "}
+                                </Link>
                                 <Link
                                     to={`/bookings/${booking.bookingId}/edit`}
                                 >
                                     Edit
-                                </Link>{" "}
-                                |{" "}
+                                </Link>
                                 <button
                                     onClick={() =>
                                         handleDelete(booking.bookingId)
                                     }
-                                    style={{
-                                        color: "red",
-                                        border: "none",
-                                        background: "none",
-                                        cursor: "pointer",
-                                    }}
                                 >
                                     Delete
                                 </button>
@@ -111,7 +108,7 @@ const BookingsList = () => {
                     {bookings.length === 0 && (
                         <tr>
                             <td
-                                colSpan="5"
+                                colSpan="7"
                                 style={{ textAlign: "center", padding: "1rem" }}
                             >
                                 No bookings found.

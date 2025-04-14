@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import api from "../../utils/api";
-import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import api from "../../utils/api";
+import "../../styles/BookingForm.css";
 
-const CreateBooking = () => {
-    const [errorMessage, setErrorMessage] = useState("");
-    const [conflictingRooms, setConflictingRooms] = useState([]);
+export default function CreateBooking() {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -21,6 +20,40 @@ const CreateBooking = () => {
         discountIds: [],
     });
 
+    const [meals, setMeals] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [discounts, setDiscounts] = useState([]);
+    const [errors, setErrors] = useState({});
+    const [conflictRoomIds, setConflictRoomIds] = useState([]);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [roomsRes, mealsRes, discountsRes] = await Promise.all([
+                    api.get("/api/rooms"),
+                    api.get("/api/meals"),
+                    api.get("/api/discounts"),
+                ]);
+                setRooms(roomsRes.data);
+                setMeals(mealsRes.data);
+                setDiscounts(discountsRes.data);
+            } catch (err) {
+                console.error("Failed to fetch options", err);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const getUserIdFromToken = () => {
+        const token =
+            localStorage.getItem("accessToken") ||
+            sessionStorage.getItem("accessToken");
+        if (!token) return null;
+        const decoded = jwtDecode(token);
+        return decoded.userId;
+    };
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -29,93 +62,96 @@ const CreateBooking = () => {
         }));
     };
 
-    const handleArrayChange = (e, key) => {
+    const handleMultiSelectChange = (e, key) => {
+        const selected = Array.from(e.target.selectedOptions).map((o) =>
+            parseInt(o.value)
+        );
+        setFormData((prev) => ({ ...prev, [key]: selected }));
+    };
+
+    const handleArrayInput = (e, key) => {
         const values = e.target.value
             .split(",")
             .map((v) => v.trim())
             .filter(Boolean);
-
-        setFormData((prev) => ({
-            ...prev,
-            [key]:
-                key === "requirements" || key === "participantsList"
-                    ? values
-                    : values.map(Number),
-        }));
+        setFormData((prev) => ({ ...prev, [key]: values }));
     };
 
-    const getUserIdFromToken = () => {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return null;
-        const decoded = jwtDecode(token);
-        return decoded.userId;
+    const validate = () => {
+        const newErrors = {};
+        if (!formData.checkinDate)
+            newErrors.checkinDate = "Check-in date is required";
+        if (!formData.checkoutDate)
+            newErrors.checkoutDate = "Check-out date is required";
+        if (!formData.firstMeal) newErrors.firstMeal = "First meal is required";
+        if (formData.roomIds.length === 0)
+            newErrors.roomIds = "Select at least one room";
+        return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage("");
-        setConflictingRooms([]);
+        setErrors({});
+        setError("");
+        setConflictRoomIds([]);
+
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+
+        const userId = getUserIdFromToken();
+        if (!userId) return alert("User not authenticated");
 
         try {
-            const userId = getUserIdFromToken();
-            if (!userId) throw new Error("User not authenticated");
-
             const payload = {
                 ...formData,
                 userId,
-                requirements: formData.requirements || [],
-                participantsList: formData.participantsList || [],
             };
 
             const res = await api.post("/api/bookings", payload);
-
-            const price = parseFloat(res.data.bookingPrice || 0).toFixed(2);
-            alert(`Booking created! Final Price: $${price}`);
-
-            navigate("/dashboard");
+            alert(`Booking created! Final Price: $${res.data.finalPrice}`);
+            navigate("/bookings");
         } catch (err) {
             if (err.response?.status === 409) {
-                const data = err.response.data;
-                setErrorMessage(data.message);
-                setConflictingRooms(data.conflictRoomIds || []);
+                setError(err.response.data.message);
+                setConflictRoomIds(err.response.data.conflictRoomIds || []);
             } else {
-                console.error("Booking failed:", err);
-                setErrorMessage("Booking failed. Please try again.");
+                console.error("Failed to create booking", err);
+                setError("Failed to create booking.");
             }
         }
     };
 
     return (
-        <div style={{ maxWidth: "600px", margin: "0 auto", padding: "2rem" }}>
-            <h2>Create a Booking</h2>
+        <div className="booking-form-container">
+            <h2>Create Booking</h2>
 
-            {errorMessage && (
-                <div
-                    style={{
-                        backgroundColor: "#ffe0e0",
-                        padding: "1rem",
-                        borderRadius: "8px",
-                        marginBottom: "1rem",
-                    }}
-                >
-                    <strong>{errorMessage}</strong>
-                    {conflictingRooms.length > 0 && (
+            {error && (
+                <div className="booking-error-box">
+                    <strong>{error}</strong>
+                    {conflictRoomIds.length > 0 && (
                         <p>
-                            Unavailable room IDs: {conflictingRooms.join(", ")}
+                            Unavailable room IDs: {conflictRoomIds.join(", ")}
                         </p>
                     )}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="booking-form">
                 <label>
                     Check-in Date:
                     <input
                         type="date"
                         name="checkinDate"
+                        value={formData.checkinDate}
                         min={new Date().toISOString().split("T")[0]}
                         onChange={handleChange}
                     />
+                    {errors.checkinDate && (
+                        <p className="error">{errors.checkinDate}</p>
+                    )}
                 </label>
 
                 <label>
@@ -123,9 +159,32 @@ const CreateBooking = () => {
                     <input
                         type="date"
                         name="checkoutDate"
-                        min={new Date().toISOString().split("T")[0]}
+                        value={formData.checkoutDate}
+                        min={formData.checkinDate}
                         onChange={handleChange}
                     />
+                    {errors.checkoutDate && (
+                        <p className="error">{errors.checkoutDate}</p>
+                    )}
+                </label>
+
+                <label>
+                    First Meal:
+                    <select
+                        name="firstMeal"
+                        value={formData.firstMeal}
+                        onChange={handleChange}
+                    >
+                        <option value="">-- Select First Meal --</option>
+                        {meals.map((meal) => (
+                            <option key={meal.mealId} value={meal.name}>
+                                {meal.name}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.firstMeal && (
+                        <p className="error">{errors.firstMeal}</p>
+                    )}
                 </label>
 
                 <label>
@@ -133,24 +192,79 @@ const CreateBooking = () => {
                     <input
                         type="checkbox"
                         name="hasOvernight"
+                        checked={formData.hasOvernight}
                         onChange={handleChange}
                     />
                 </label>
 
                 <label>
-                    First Meal:
-                    <input
-                        type="text"
-                        name="firstMeal"
-                        onChange={handleChange}
-                    />
+                    Rooms:
+                    <select
+                        multiple
+                        value={formData.roomIds}
+                        onChange={(e) => handleMultiSelectChange(e, "roomIds")}
+                    >
+                        {rooms.map((room) => (
+                            <option key={room.roomId} value={room.roomId}>
+                                {room.roomName} ({room.roomType})
+                            </option>
+                        ))}
+                    </select>
+                    {errors.roomIds && (
+                        <p className="error">{errors.roomIds}</p>
+                    )}
+                </label>
+
+                <label>
+                    Meals:
+                    <select
+                        multiple
+                        value={formData.mealIds}
+                        onChange={(e) => handleMultiSelectChange(e, "mealIds")}
+                    >
+                        {meals.map((meal) => (
+                            <option key={meal.mealId} value={meal.mealId}>
+                                {meal.name} — $
+                                {parseFloat(meal.price).toFixed(2)}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    Discounts:
+                    <select
+                        multiple
+                        value={formData.discountIds}
+                        onChange={(e) =>
+                            handleMultiSelectChange(e, "discountIds")
+                        }
+                    >
+                        {discounts.map((d) => (
+                            <option key={d.discountId} value={d.discountId}>
+                                {d.name} ({d.discountType} {d.discountValue})
+                            </option>
+                        ))}
+                    </select>
                 </label>
 
                 <label>
                     Requirements (comma-separated):
                     <input
                         type="text"
-                        onChange={(e) => handleArrayChange(e, "requirements")}
+                        value={formData.requirements.join(", ")}
+                        onChange={(e) => handleArrayInput(e, "requirements")}
+                    />
+                </label>
+
+                <label>
+                    Participants List (comma-separated):
+                    <input
+                        type="text"
+                        value={formData.participantsList.join(", ")}
+                        onChange={(e) =>
+                            handleArrayInput(e, "participantsList")
+                        }
                     />
                 </label>
 
@@ -158,50 +272,13 @@ const CreateBooking = () => {
                     Staff Notes:
                     <textarea
                         name="staffNotes"
+                        value={formData.staffNotes}
                         onChange={handleChange}
                     ></textarea>
                 </label>
 
-                <label>
-                    Participants List (comma-separated):
-                    <input
-                        type="text"
-                        onChange={(e) =>
-                            handleArrayChange(e, "participantsList")
-                        }
-                    />
-                </label>
-
-                <label>
-                    Room IDs (comma-separated):
-                    <input
-                        type="text"
-                        onChange={(e) => handleArrayChange(e, "roomIds")}
-                    />
-                </label>
-
-                <label>
-                    Meal IDs (comma-separated):
-                    <input
-                        type="text"
-                        onChange={(e) => handleArrayChange(e, "mealIds")}
-                    />
-                </label>
-
-                <label>
-                    Discount IDs (comma-separated):
-                    <input
-                        type="text"
-                        onChange={(e) => handleArrayChange(e, "discountIds")}
-                    />
-                </label>
-
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Create Booking
-                </button>
+                <button type="submit">Create Booking</button>
             </form>
         </div>
     );
-};
-
-export default CreateBooking;
+}

@@ -1,11 +1,15 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../../utils/api";
+import "../../styles/BookingDetails.css";
+import formatCurrency from "../../utils/formatCurrency";
+import { useNavigate } from "react-router-dom";
 
 export default function BookingDetails() {
     const { bookingId } = useParams();
     const [booking, setBooking] = useState(null);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooking = async () => {
@@ -25,8 +29,11 @@ export default function BookingDetails() {
     if (!booking) return <p>Loading...</p>;
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="booking-details">
             <h2>Booking Details</h2>
+            <button className="back-btn" onClick={() => navigate("/bookings")}>
+                ← Back to Bookings
+            </button>
             <p>
                 <strong>Booking ID:</strong> {booking.id}
             </p>
@@ -61,7 +68,8 @@ export default function BookingDetails() {
                 {booking.participantsList?.join(", ") || "N/A"}
             </p>
             <p>
-                <strong>Final Price:</strong> ${booking.finalPrice}
+                <strong>Final Price:</strong>{" "}
+                {formatCurrency(booking.finalPrice)}
             </p>
 
             {booking.discountBreakdown?.length > 0 && (
@@ -70,8 +78,8 @@ export default function BookingDetails() {
                     <ul>
                         {booking.discountBreakdown.map((d, idx) => (
                             <li key={idx}>
-                                {d.discountName} ({d.type}): -$
-                                {parseFloat(d.discountAmount).toFixed(2)}
+                                {d.discountName} ({d.type}): -{" "}
+                                {formatCurrency(d.discountAmount)}
                             </li>
                         ))}
                     </ul>
@@ -98,13 +106,18 @@ export default function BookingDetails() {
 
             <h4>Invoice</h4>
             <p>
-                <strong>Status:</strong> {booking.Invoice?.status}
+                <strong>Status:</strong>{" "}
+                <span className={`invoice-status ${booking.Invoice?.status}`}>
+                    {booking.Invoice?.status}
+                </span>
             </p>
             <p>
-                <strong>Total:</strong> ${booking.Invoice?.totalAmount}
+                <strong>Total:</strong>{" "}
+                {formatCurrency(booking.Invoice?.totalAmount)}
             </p>
             <p>
-                <strong>Deposit:</strong> ${booking.Invoice?.depositAmount}
+                <strong>Deposit:</strong>{" "}
+                {formatCurrency(booking.Invoice?.depositAmount)}
             </p>
         </div>
     );
