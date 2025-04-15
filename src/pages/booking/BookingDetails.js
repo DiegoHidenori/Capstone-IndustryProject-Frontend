@@ -90,7 +90,13 @@ export default function BookingDetails() {
             <ul>
                 {booking.Rooms?.map((room) => (
                     <li key={room.roomId}>
-                        {room.roomName} — {room.roomType}
+                        {room.roomName} — {room.roomType} —{" "}
+                        <strong>
+                            $
+                            {parseFloat(
+                                room.roomPricePerNight
+                            ).toLocaleString()}
+                        </strong>
                     </li>
                 ))}
             </ul>

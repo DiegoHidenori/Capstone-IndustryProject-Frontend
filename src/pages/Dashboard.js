@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import DashboardCard from "../components/DashboardCard";
+import "../styles/Dashboard.css";
+
+import { FaBed, FaUserCog, FaTags } from "react-icons/fa";
+import { MdMeetingRoom, MdFastfood } from "react-icons/md";
 
 const fetchProfile = async () => {
     const token = localStorage.getItem("accessToken");
-    const { data } = await axios.get("http://localhost:5000/api/auth/me", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch("http://localhost:5000/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
     });
-    return data;
+    if (!res.ok) throw new Error("Failed to fetch profile");
+    return res.json();
 };
 
 export default function Dashboard() {
@@ -22,68 +25,82 @@ export default function Dashboard() {
     } = useQuery({
         queryKey: ["me"],
         queryFn: fetchProfile,
-        staleTime: 1000 * 60 * 5, // cache valid for 5 minutes
+        staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     });
 
+    useEffect(() => {
+        document.title = "Dashboard";
+    }, []);
+
     if (isLoading) return <p>Loading dashboard...</p>;
-    if (error)
-        return (
-            <p style={{ color: "red" }}>
-                Oops! We couldn't load your profile. Please try again later.
-            </p>
-        );
+    if (error) return <p style={{ color: "red" }}>Failed to load profile.</p>;
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="dashboard-container">
             <h2>Hello, {profile.firstName}! Welcome to your Dashboard</h2>
-            <p>
-                <strong>User ID:</strong> {profile.userId}
-            </p>
             <p>
                 <strong>Role:</strong> {profile.role}
             </p>
-            <p>
-                <strong>Email:</strong> {profile.email}
-            </p>
 
-            {profile.role === "admin" && (
-                <div style={{ marginTop: "1rem" }}>
-                    <h4>Admin Controls</h4>
-                    <ul>
-                        <li>Manage users</li>
-                        <li>View reports</li>
-                        <li>Configure retreat center settings</li>
-                    </ul>
-                </div>
-            )}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gap: "1.5rem",
+                    marginTop: "2rem",
+                }}
+            >
+                {["admin", "staff"].includes(profile.role) && (
+                    <>
+                        <DashboardCard
+                            to="/bookings"
+                            icon={FaBed}
+                            label="Manage Bookings"
+                        />
+                        <DashboardCard
+                            to="/rooms"
+                            icon={MdMeetingRoom}
+                            label="Manage Rooms"
+                        />
+                        <DashboardCard
+                            to="/meals"
+                            icon={MdFastfood}
+                            label="Manage Meals"
+                        />
+                        <DashboardCard
+                            to="/discounts"
+                            icon={FaTags}
+                            label="Manage Discounts"
+                        />
+                        <DashboardCard
+                            to="/users"
+                            icon={FaUserCog}
+                            label="Manage Users"
+                        />
+                    </>
+                )}
 
-            {profile.role === "guest" && (
-                <div style={{ marginTop: "1rem" }}>
-                    <h4>Your Booking Tools</h4>
-                    <ul>
-                        <li>
-                            <Link to="/create-booking">
-                                Make a new reservation
-                            </Link>
-                        </li>
-                        <li>View your bookings</li>
-                        <li>Manage your profile</li>
-                    </ul>
-                </div>
-            )}
-
-            {/* Staff role example */}
-            {profile.role === "staff" && (
-                <div style={{ marginTop: "1rem" }}>
-                    <h4>Staff Portal</h4>
-                    <ul>
-                        <li>View assigned tasks</li>
-                        <li>Check schedules</li>
-                        <li>Log room cleaning updates</li>
-                    </ul>
-                </div>
-            )}
+                {profile.role === "guest" && (
+                    <>
+                        <DashboardCard
+                            to="/bookings"
+                            icon={FaBed}
+                            label="My Bookings"
+                        />
+                        <DashboardCard
+                            to="/create-booking"
+                            icon={MdMeetingRoom}
+                            label="New Booking"
+                        />
+                        <DashboardCard
+                            to="/profile"
+                            icon={FaUserCog}
+                            label="Manage Profile"
+                        />
+                    </>
+                )}
+            </div>
         </div>
     );
 }

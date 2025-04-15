@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../styles/BookingsList.css";
 
 const BookingsList = () => {
     const { user } = useAuth();
     const [bookings, setBookings] = useState([]);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -51,6 +52,12 @@ const BookingsList = () => {
     return (
         <div className="bookings-container">
             <h2>Bookings</h2>
+            <button
+                className="new-booking-button"
+                onClick={() => navigate("/create-booking")}
+            >
+                + New Booking
+            </button>
             <table className="bookings-table">
                 <thead>
                     <tr>
@@ -84,7 +91,13 @@ const BookingsList = () => {
                                 ).toLocaleDateString()}
                             </td>
                             <td>
-                                ${parseFloat(booking.bookingPrice).toFixed(2)}
+                                $
+                                {parseFloat(
+                                    booking.bookingPrice
+                                ).toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                })}
                             </td>
                             <td className="bookings-actions">
                                 <Link to={`/bookings/${booking.bookingId}`}>

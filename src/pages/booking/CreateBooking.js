@@ -292,9 +292,14 @@ export default function CreateBooking() {
                         onChange={handleChange}
                     ></textarea>
                 </label>
-
                 <button type="submit">Create Booking</button>
             </form>
+            <button
+                className="new-booking-button"
+                onClick={() => navigate("/bookings")}
+            >
+                Cancel
+            </button>
         </div>
     );
 }

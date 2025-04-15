@@ -312,6 +312,12 @@ export default function EditBooking() {
 
                 <button type="submit">Update Booking</button>
             </form>
+            <button
+                className="new-booking-button"
+                onClick={() => navigate("/bookings")}
+            >
+                Cancel
+            </button>
         </div>
     );
 }

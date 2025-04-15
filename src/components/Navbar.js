@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "../styles/Navbar.css"; // ✅ Add this line
 
 export default function Navbar() {
     const { user, logout, loading } = useAuth();
@@ -10,38 +11,27 @@ export default function Navbar() {
         navigate("/login");
     };
 
-    if (loading) return null; // ⏳ Wait until auth state is restored
+    if (loading) return null;
 
     return (
-        <nav style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-            <Link to="/">Home</Link>
-            {user ? (
-                <>
-                    <Link to="/dashboard">Dashboard</Link>
-                    {["admin", "staff"].includes(user.role) && (
-                        <Link to="/bookings">Bookings</Link>
-                    )}
-                    {["admin", "staff"].includes(user.role) && (
-                        <Link to="/rooms">Rooms</Link>
-                    )}
-                    <Link to="/create-booking">New Booking</Link>
-                    {["admin", "staff"].includes(user.role) && (
-                        <Link to="/meals">Meals</Link>
-                    )}
-                    {["admin", "staff"].includes(user.role) && (
-                        <Link to="/discounts">Discounts</Link>
-                    )}
-                    {["admin", "staff"].includes(user.role) && (
-                        <Link to="/users">Users</Link>
-                    )}
-                    <button onClick={handleLogout}>Logout</button>
-                </>
-            ) : (
-                <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                </>
-            )}
+        <nav>
+            <div className="nav-left">
+                <Link to="/">Home</Link>
+                {user && <Link to="/dashboard">Dashboard</Link>}
+            </div>
+
+            <div className="nav-right">
+                {user ? (
+                    <>
+                        <button onClick={handleLogout}>Logout</button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/login">Login</Link>
+                        <Link to="/register">Register</Link>
+                    </>
+                )}
+            </div>
         </nav>
     );
 }
