@@ -1,0 +1,18 @@
+.room-shape {
+    cursor: pointer;
+    transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.room-shape.selected {
+    fill: #28a745 !important;
+    stroke: #155724 !important;
+    stroke-width: 2px;
+}
+
+.room-label {
+    font-weight: normal;
+}
+
+.room-shape + text {
+    pointer-events: none;
+}

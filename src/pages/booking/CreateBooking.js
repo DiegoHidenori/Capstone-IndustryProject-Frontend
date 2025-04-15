@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../../utils/api";
 import "../../styles/BookingForm.css";
+import RoomMap from "../../components/RoomMap";
 
 export default function CreateBooking() {
     const navigate = useNavigate();
@@ -62,11 +63,24 @@ export default function CreateBooking() {
         }));
     };
 
-    const handleMultiSelectChange = (e, key) => {
-        const selected = Array.from(e.target.selectedOptions).map((o) =>
-            parseInt(o.value)
-        );
-        setFormData((prev) => ({ ...prev, [key]: selected }));
+    const handleCheckboxArrayChange = (id, key) => {
+        setFormData((prev) => {
+            const current = new Set(prev[key]);
+            current.has(id) ? current.delete(id) : current.add(id);
+            return { ...prev, [key]: Array.from(current) };
+        });
+    };
+
+    const handleRoomToggle = (roomId) => {
+        setFormData((prev) => {
+            const exists = prev.roomIds.includes(roomId);
+            return {
+                ...prev,
+                roomIds: exists
+                    ? prev.roomIds.filter((id) => id !== roomId)
+                    : [...prev.roomIds, roomId],
+            };
+        });
     };
 
     const handleArrayInput = (e, key) => {
@@ -110,7 +124,11 @@ export default function CreateBooking() {
                 userId,
             };
 
-            const res = await api.post("/api/bookings", payload);
+            const res = await api.post("/api/bookings", {
+                ...formData,
+                userId,
+            });
+
             alert(`Booking created! Final Price: $${res.data.finalPrice}`);
             navigate("/bookings");
         } catch (err) {
@@ -198,55 +216,53 @@ export default function CreateBooking() {
                 </label>
 
                 <label>
-                    Rooms:
-                    <select
-                        multiple
-                        value={formData.roomIds}
-                        onChange={(e) => handleMultiSelectChange(e, "roomIds")}
-                    >
-                        {rooms.map((room) => (
-                            <option key={room.roomId} value={room.roomId}>
-                                {room.roomName} ({room.roomType})
-                            </option>
-                        ))}
-                    </select>
-                    {errors.roomIds && (
-                        <p className="error">{errors.roomIds}</p>
-                    )}
+                    Select Rooms by Clicking the Map:
+                    <RoomMap
+                        rooms={rooms}
+                        selectedRooms={formData.roomIds}
+                        onRoomClick={handleRoomToggle} // ✅ now works with string room IDs
+                    />
                 </label>
 
-                <label>
-                    Meals:
-                    <select
-                        multiple
-                        value={formData.mealIds}
-                        onChange={(e) => handleMultiSelectChange(e, "mealIds")}
-                    >
-                        {meals.map((meal) => (
-                            <option key={meal.mealId} value={meal.mealId}>
-                                {meal.name} — $
-                                {parseFloat(meal.price).toFixed(2)}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                <fieldset>
+                    <legend>Meals:</legend>
+                    {meals.map((meal) => (
+                        <label key={meal.mealId} style={{ display: "block" }}>
+                            <input
+                                type="checkbox"
+                                checked={formData.mealIds.includes(meal.mealId)}
+                                onChange={() =>
+                                    handleCheckboxArrayChange(
+                                        meal.mealId,
+                                        "mealIds"
+                                    )
+                                }
+                            />
+                            {meal.name} — ${parseFloat(meal.price).toFixed(2)}
+                        </label>
+                    ))}
+                </fieldset>
 
-                <label>
-                    Discounts:
-                    <select
-                        multiple
-                        value={formData.discountIds}
-                        onChange={(e) =>
-                            handleMultiSelectChange(e, "discountIds")
-                        }
-                    >
-                        {discounts.map((d) => (
-                            <option key={d.discountId} value={d.discountId}>
-                                {d.name} ({d.discountType} {d.discountValue})
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                <fieldset>
+                    <legend>Discounts:</legend>
+                    {discounts.map((d) => (
+                        <label key={d.discountId} style={{ display: "block" }}>
+                            <input
+                                type="checkbox"
+                                checked={formData.discountIds.includes(
+                                    d.discountId
+                                )}
+                                onChange={() =>
+                                    handleCheckboxArrayChange(
+                                        d.discountId,
+                                        "discountIds"
+                                    )
+                                }
+                            />
+                            {d.name} ({d.discountType} {d.discountValue})
+                        </label>
+                    ))}
+                </fieldset>
 
                 <label>
                     Requirements (comma-separated):
