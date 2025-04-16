@@ -1,0 +1,90 @@
+.rooms-container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: auto;
+    background-color: #f8f7f3;
+    color: #2f3e2e;
+    border-radius: 12px;
+}
+
+.rooms-container h2 {
+    margin-bottom: 1rem;
+    color: #446d53;
+}
+
+.new-room-button {
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.new-room-button:hover {
+    background-color: #4b7253;
+}
+
+.rooms-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.rooms-table th,
+.rooms-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.rooms-table th {
+    background-color: #ecf1eb;
+    color: #2f3e2e;
+    font-weight: bold;
+}
+
+.rooms-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.rooms-actions a,
+.rooms-actions button {
+    background-color: #e6e9f0;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.rooms-actions a:hover,
+.rooms-actions button:hover {
+    background-color: #d4dbdf;
+}
+
+.rooms-actions button {
+    color: #b23c3c;
+}
+
+.no-rooms {
+    text-align: center;
+    padding: 1rem;
+    color: #777;
+}
+
+.error-text {
+    color: #c0392b;
+    text-align: center;
+    font-weight: bold;
+}

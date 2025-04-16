@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
 import { Link, useNavigate } from "react-router-dom";
+import "../../styles/RoomsList.css";
 
 export default function RoomsList() {
     const { user } = useAuth();
@@ -38,18 +39,18 @@ export default function RoomsList() {
         }
     };
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    if (error) return <p className="error-text">{error}</p>;
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="rooms-container">
             <h2>Room Management</h2>
             <button
-                onClick={() => navigate("/rooms/create")}
-                style={{ marginBottom: "1rem" }}
+                className="new-room-button"
+                onClick={() => navigate("/rooms/new")}
             >
                 ➕ Add New Room
             </button>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <table className="rooms-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -68,20 +69,13 @@ export default function RoomsList() {
                             <td>{room.roomType}</td>
                             <td>${room.roomPricePerNight}</td>
                             <td>{room.maxCapacity}</td>
-                            <td>
-                                <Link to={`/rooms/${room.roomId}`}>View</Link> |{" "}
+                            <td className="rooms-actions">
+                                <Link to={`/rooms/${room.roomId}`}>View</Link>
                                 <Link to={`/rooms/${room.roomId}/edit`}>
                                     Edit
-                                </Link>{" "}
-                                |{" "}
+                                </Link>
                                 <button
                                     onClick={() => handleDelete(room.roomId)}
-                                    style={{
-                                        color: "red",
-                                        border: "none",
-                                        background: "none",
-                                        cursor: "pointer",
-                                    }}
                                 >
                                     Delete
                                 </button>
@@ -90,10 +84,7 @@ export default function RoomsList() {
                     ))}
                     {rooms.length === 0 && (
                         <tr>
-                            <td
-                                colSpan="6"
-                                style={{ textAlign: "center", padding: "1rem" }}
-                            >
+                            <td colSpan="6" className="no-rooms">
                                 No rooms found.
                             </td>
                         </tr>

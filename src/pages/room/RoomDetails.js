@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/RoomDetails.css";
 
 export default function RoomDetails() {
     const { roomId } = useParams();
@@ -22,12 +23,13 @@ export default function RoomDetails() {
         fetchRoom();
     }, [roomId]);
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
-    if (!room) return <p>Loading...</p>;
+    if (error) return <p className="room-error">{error}</p>;
+    if (!room) return <p className="room-loading">Loading...</p>;
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto" }}>
+        <div className="room-details-container">
             <h2>Room Details</h2>
+
             <p>
                 <strong>Name:</strong> {room.roomName}
             </p>
@@ -49,14 +51,19 @@ export default function RoomDetails() {
                 {room.needsCleaning ? "Yes" : "No"}
             </p>
 
-            <div style={{ marginTop: "1rem" }}>
+            <div className="room-details-actions">
                 <Link
                     to={`/rooms/${room.roomId}/edit`}
-                    style={{ marginRight: "1rem" }}
+                    className="room-button edit"
                 >
                     Edit Room
                 </Link>
-                <button onClick={() => navigate("/rooms")}>Back to List</button>
+                <button
+                    className="room-button back"
+                    onClick={() => navigate("/rooms")}
+                >
+                    ← Back to List
+                </button>
             </div>
         </div>
     );
