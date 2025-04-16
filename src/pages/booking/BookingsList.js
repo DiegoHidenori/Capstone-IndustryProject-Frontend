@@ -2,52 +2,57 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 import "../../styles/BookingsList.css";
 
 const BookingsList = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [bookings, setBookings] = useState([]);
     const [error, setError] = useState("");
-    const navigate = useNavigate();
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+    const fetchBookings = async () => {
+        try {
+            const res = await api.get("/api/bookings");
+            const all = res.data;
+            const filtered =
+                user.role === "guest"
+                    ? all.filter((b) => b.userId === user.userId)
+                    : all;
+            setBookings(filtered);
+        } catch (err) {
+            console.error(err);
+            setError("Failed to load bookings.");
+            toast.error("Failed to load bookings.");
+        }
+    };
 
     useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const res = await api.get("/api/bookings");
-                const allBookings = res.data;
-
-                // Guests see only their own bookings
-                const filtered =
-                    user.role === "guest"
-                        ? allBookings.filter((b) => b.userId === user.userId)
-                        : allBookings;
-
-                setBookings(filtered);
-            } catch (err) {
-                console.error(err);
-                setError("Failed to load bookings.");
-            }
-        };
-
         if (user) fetchBookings();
     }, [user]);
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    const handleDeleteClick = (bookingId) => {
+        setSelectedBookingId(bookingId);
+    };
 
     const handleDelete = async (bookingId) => {
-        if (!window.confirm("Are you sure you want to delete this booking?"))
-            return;
-
         try {
             await api.delete(`/api/bookings/${bookingId}`);
             setBookings((prev) =>
                 prev.filter((b) => b.bookingId !== bookingId)
             );
+            toast.success("Booking deleted.");
         } catch (err) {
             console.error("Delete failed:", err);
-            setError("Failed to delete booking.");
+            toast.error("Failed to delete booking.");
+        } finally {
+            setSelectedBookingId(null);
         }
     };
+
+    if (error) return <p className="error">{error}</p>;
 
     return (
         <div className="bookings-container">
@@ -110,7 +115,7 @@ const BookingsList = () => {
                                 </Link>
                                 <button
                                     onClick={() =>
-                                        handleDelete(booking.bookingId)
+                                        handleDeleteClick(booking.bookingId)
                                     }
                                 >
                                     Delete
@@ -120,16 +125,20 @@ const BookingsList = () => {
                     ))}
                     {bookings.length === 0 && (
                         <tr>
-                            <td
-                                colSpan="7"
-                                style={{ textAlign: "center", padding: "1rem" }}
-                            >
+                            <td colSpan="7" className="no-data">
                                 No bookings found.
                             </td>
                         </tr>
                     )}
                 </tbody>
             </table>
+
+            <ConfirmModal
+                isOpen={!!selectedBookingId}
+                onClose={() => setSelectedBookingId(null)}
+                onConfirm={() => handleDelete(selectedBookingId)}
+                message="Are you sure you want to delete this booking?"
+            />
         </div>
     );
 };

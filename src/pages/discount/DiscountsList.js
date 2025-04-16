@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
 import "../../styles/DiscountsList.css";
+import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 
 export default function DiscountsList() {
     const [discounts, setDiscounts] = useState([]);
     const [error, setError] = useState("");
+    const [selectedDiscountId, setSelectedDiscountId] = useState(null);
 
     const fetchDiscounts = async () => {
         try {
@@ -14,18 +17,24 @@ export default function DiscountsList() {
         } catch (err) {
             console.error("Error fetching discounts:", err);
             setError("Failed to load discounts.");
+            toast.error("Failed to load discounts.");
         }
     };
 
-    const deleteDiscount = async (discountId) => {
-        if (!window.confirm("Are you sure you want to delete this discount?"))
-            return;
+    const handleDeleteClick = (discountId) => {
+        setSelectedDiscountId(discountId);
+    };
+
+    const handleDelete = async (discountId) => {
         try {
             await api.delete(`/api/discounts/${discountId}`);
+            toast.success("Discount deleted!");
             fetchDiscounts();
         } catch (err) {
             console.error("Error deleting discount:", err);
-            setError("Failed to delete discount.");
+            toast.error("Failed to delete discount.");
+        } finally {
+            setSelectedDiscountId(null);
         }
     };
 
@@ -72,7 +81,9 @@ export default function DiscountsList() {
                                 </Link>
                                 <button
                                     className="delete-btn"
-                                    onClick={() => deleteDiscount(d.discountId)}
+                                    onClick={() =>
+                                        handleDeleteClick(d.discountId)
+                                    }
                                 >
                                     Delete
                                 </button>
@@ -88,6 +99,13 @@ export default function DiscountsList() {
                     )}
                 </tbody>
             </table>
+
+            <ConfirmModal
+                isOpen={!!selectedDiscountId}
+                onClose={() => setSelectedDiscountId(null)}
+                onConfirm={() => handleDelete(selectedDiscountId)}
+                message="Are you sure you want to delete this discount?"
+            />
         </div>
     );
 }

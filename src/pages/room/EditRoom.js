@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import "../../styles/RoomForm.css";
+import { toast } from "react-toastify";
 
 export default function EditRoom() {
     const { roomId } = useParams();
@@ -46,11 +47,12 @@ export default function EditRoom() {
         setError("");
         try {
             await api.put(`/api/rooms/${roomId}`, formData);
-            alert("Room updated!");
+            toast.success("Room updated!");
             navigate("/rooms");
         } catch (err) {
             console.error("Update failed", err);
             setError("Failed to update room.");
+            toast.error("Failed to update room.");
         }
     };
 

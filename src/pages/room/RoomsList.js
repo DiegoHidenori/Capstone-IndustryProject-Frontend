@@ -3,12 +3,15 @@ import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/RoomsList.css";
+import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 
 export default function RoomsList() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [rooms, setRooms] = useState([]);
     const [error, setError] = useState("");
+    const [selectedRoomId, setSelectedRoomId] = useState(null);
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -18,24 +21,34 @@ export default function RoomsList() {
             } catch (err) {
                 console.error(err);
                 setError("Failed to fetch rooms.");
+                toast.error("Failed to fetch rooms.");
             }
         };
 
         if (user) fetchRooms();
     }, [user]);
 
-    const handleDelete = async (roomId) => {
-        const confirm = window.confirm(
-            "Are you sure you want to delete this room?"
-        );
-        if (!confirm) return;
+    const handleDeleteClick = (roomId) => {
+        setSelectedRoomId(roomId);
+    };
 
+    const handleDelete = async (roomId) => {
         try {
             await api.delete(`/api/rooms/${roomId}`);
             setRooms((prev) => prev.filter((r) => r.roomId !== roomId));
+            toast.success("Room deleted!");
         } catch (err) {
             console.error(err);
             setError("Failed to delete room.");
+            toast.error("Failed to delete room.");
+        } finally {
+            setSelectedRoomId(null);
+        }
+    };
+
+    const confirmDelete = () => {
+        if (selectedRoomId) {
+            handleDelete(selectedRoomId);
         }
     };
 
@@ -75,7 +88,9 @@ export default function RoomsList() {
                                     Edit
                                 </Link>
                                 <button
-                                    onClick={() => handleDelete(room.roomId)}
+                                    onClick={() =>
+                                        handleDeleteClick(room.roomId)
+                                    }
                                 >
                                     Delete
                                 </button>
@@ -91,6 +106,12 @@ export default function RoomsList() {
                     )}
                 </tbody>
             </table>
+            <ConfirmModal
+                isOpen={!!selectedRoomId}
+                onClose={() => setSelectedRoomId(null)}
+                onConfirm={confirmDelete}
+                message="Are you sure you want to delete this room?"
+            />
         </div>
     );
 }

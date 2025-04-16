@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
+import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 import "../../styles/MealsList.css";
 
 export default function MealsList() {
     const [meals, setMeals] = useState([]);
     const [error, setError] = useState("");
+    const [selectedMealId, setSelectedMealId] = useState(null);
 
     const fetchMeals = async () => {
         try {
@@ -14,19 +17,30 @@ export default function MealsList() {
         } catch (err) {
             console.error("Error fetching meals:", err);
             setError("Failed to load meals.");
+            toast.error("Failed to load meals.");
         }
     };
 
-    const deleteMeal = async (mealId) => {
-        if (!window.confirm("Are you sure you want to delete this meal?"))
-            return;
+    const handleDeleteClick = (mealId) => {
+        setSelectedMealId(mealId);
+    };
+
+    const handleDelete = async (mealId) => {
         try {
             await api.delete(`/api/meals/${mealId}`);
+            toast.success("Meal deleted successfully!");
             fetchMeals();
         } catch (err) {
             console.error("Error deleting meal:", err);
             setError("Failed to delete meal.");
+            toast.error("Failed to delete meal.");
+        } finally {
+            setSelectedMealId(null);
         }
+    };
+
+    const confirmDelete = () => {
+        if (selectedMealId) handleDelete(selectedMealId);
     };
 
     useEffect(() => {
@@ -66,7 +80,9 @@ export default function MealsList() {
                                 </Link>
                                 <button
                                     className="delete-btn"
-                                    onClick={() => deleteMeal(meal.mealId)}
+                                    onClick={() =>
+                                        handleDeleteClick(meal.mealId)
+                                    }
                                 >
                                     Delete
                                 </button>
@@ -82,6 +98,13 @@ export default function MealsList() {
                     )}
                 </tbody>
             </table>
+
+            <ConfirmModal
+                isOpen={!!selectedMealId}
+                onClose={() => setSelectedMealId(null)}
+                onConfirm={confirmDelete}
+                message="Are you sure you want to delete this meal?"
+            />
         </div>
     );
 }

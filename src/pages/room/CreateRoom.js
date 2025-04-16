@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import api from "../../utils/api";
 import "../../styles/RoomForm.css";
+import { toast } from "react-toastify";
 
 export default function CreateRoom() {
     const navigate = useNavigate();
@@ -30,11 +31,11 @@ export default function CreateRoom() {
         setError("");
         try {
             await api.post("/api/rooms", formData);
-            alert("Room created successfully!");
+            toast.success("Room created successfully!");
             navigate("/rooms");
         } catch (err) {
             console.error("Room creation failed", err);
-            setError("Failed to create room.");
+            toast.error("Failed to create room.");
         }
     };
 

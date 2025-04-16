@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
 import "../../styles/UsersList.css";
+import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 
 export default function UsersList() {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState("");
+    const [selectedUserId, setSelectedUserId] = useState(null);
 
     const fetchUsers = async () => {
         try {
@@ -14,18 +17,24 @@ export default function UsersList() {
         } catch (err) {
             console.error("Error fetching users:", err);
             setError("Failed to load users.");
+            toast.error("Failed to load users.");
         }
     };
 
-    const deleteUser = async (userId) => {
-        if (!window.confirm("Are you sure you want to delete this user?"))
-            return;
+    const handleDeleteClick = (userId) => {
+        setSelectedUserId(userId);
+    };
+
+    const handleDelete = async (userId) => {
         try {
             await api.delete(`/api/users/${userId}`);
+            toast.success("User deleted.");
             fetchUsers();
         } catch (err) {
             console.error("Error deleting user:", err);
-            setError("Failed to delete user.");
+            toast.error("Failed to delete user.");
+        } finally {
+            setSelectedUserId(null);
         }
     };
 
@@ -55,7 +64,7 @@ export default function UsersList() {
                             <td>{`${user.firstName} ${user.lastName}`}</td>
                             <td>{user.email}</td>
                             <td>{user.role}</td>
-                            <td>
+                            <td className="actions-cell">
                                 <Link to={`/users/${user.userId}`}>
                                     <button className="view-btn">View</button>
                                 </Link>
@@ -64,7 +73,9 @@ export default function UsersList() {
                                 </Link>
                                 <button
                                     className="delete-btn"
-                                    onClick={() => deleteUser(user.userId)}
+                                    onClick={() =>
+                                        handleDeleteClick(user.userId)
+                                    }
                                 >
                                     Delete
                                 </button>
@@ -80,6 +91,13 @@ export default function UsersList() {
                     )}
                 </tbody>
             </table>
+
+            <ConfirmModal
+                isOpen={!!selectedUserId}
+                onClose={() => setSelectedUserId(null)}
+                onConfirm={() => handleDelete(selectedUserId)}
+                message="Are you sure you want to delete this user?"
+            />
         </div>
     );
 }
