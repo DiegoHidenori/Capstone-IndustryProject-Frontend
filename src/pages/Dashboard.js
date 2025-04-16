@@ -4,17 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import DashboardCard from "../components/DashboardCard";
 import "../styles/Dashboard.css";
+import api from "../utils/api";
 
 import { FaBed, FaUserCog, FaTags } from "react-icons/fa";
 import { MdMeetingRoom, MdFastfood } from "react-icons/md";
 
 const fetchProfile = async () => {
-    const token = localStorage.getItem("accessToken");
-    const res = await fetch("http://localhost:5000/api/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) throw new Error("Failed to fetch profile");
-    return res.json();
+    const res = await api.get("/api/auth/me");
+    return res.data;
 };
 
 export default function Dashboard() {
