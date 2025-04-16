@@ -1,0 +1,68 @@
+.meal-details-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    background: #f8f7f3;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    color: #2f3e2e;
+}
+
+.meal-details-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #446d53;
+    text-align: center;
+}
+
+.meal-details-container p {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    color: #3b4b39;
+}
+
+.meal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.edit-btn,
+.back-btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.edit-btn {
+    background-color: #f39c12;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #d78c0f;
+}
+
+.back-btn {
+    background-color: #6a8f72;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: #4b7253;
+}
+
+.error {
+    color: #c0392b;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.loading {
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+}

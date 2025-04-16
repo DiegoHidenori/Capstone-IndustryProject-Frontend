@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/MealDetails.css";
 
 export default function MealDetails() {
     const { mealId } = useParams();
@@ -17,20 +18,19 @@ export default function MealDetails() {
                 setError("Failed to load meal.");
             }
         };
-
         fetchMeal();
     }, [mealId]);
 
     if (error) {
-        return <p style={{ color: "red" }}>{error}</p>;
+        return <p className="error">{error}</p>;
     }
 
     if (!meal) {
-        return <p>Loading...</p>;
+        return <p className="loading">Loading...</p>;
     }
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="meal-details-container">
             <h2>Meal Details</h2>
             <p>
                 <strong>ID:</strong> {meal.mealId}
@@ -41,12 +41,15 @@ export default function MealDetails() {
             <p>
                 <strong>Price:</strong> ${parseFloat(meal.price).toFixed(2)}
             </p>
-            <Link to={`/meals/${meal.mealId}/edit`}>
-                <button>Edit</button>
-            </Link>{" "}
-            <Link to="/meals">
-                <button>Back to Meals</button>
-            </Link>
+
+            <div className="meal-actions">
+                <Link to={`/meals/${meal.mealId}/edit`}>
+                    <button className="edit-btn">Edit</button>
+                </Link>
+                <Link to="/meals">
+                    <button className="back-btn">Back to Meals</button>
+                </Link>
+            </div>
         </div>
     );
 }

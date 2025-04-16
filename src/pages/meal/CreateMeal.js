@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/MealForm.css";
 
 export default function CreateMeal() {
     const navigate = useNavigate();
@@ -26,11 +27,11 @@ export default function CreateMeal() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "500px", margin: "0 auto" }}>
+        <div className="meal-form-container">
             <h2>Add New Meal</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form className="meal-form" onSubmit={handleSubmit}>
                 <label>
                     Name:
                     <input
@@ -54,9 +55,7 @@ export default function CreateMeal() {
                     />
                 </label>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Create Meal
-                </button>
+                <button type="submit">Create Meal</button>
             </form>
         </div>
     );

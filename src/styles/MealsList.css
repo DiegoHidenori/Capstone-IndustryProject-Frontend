@@ -1,0 +1,102 @@
+.meals-list-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f8f7f3;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    color: #2f3e2e;
+}
+
+.meals-list-container h2 {
+    margin-bottom: 1.5rem;
+    color: #446d53;
+    text-align: center;
+}
+
+.meals-actions {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+
+.primary-btn {
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.primary-btn:hover {
+    background-color: #4b7253;
+}
+
+.meals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.meals-table th,
+.meals-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.meals-table th {
+    background-color: #e6e4dd;
+    color: #3b4b39;
+}
+
+.view-btn,
+.edit-btn,
+.delete-btn {
+    margin-right: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+}
+
+.view-btn {
+    background-color: #78b0a0;
+    color: white;
+}
+
+.view-btn:hover {
+    background-color: #5a8c7e;
+}
+
+.edit-btn {
+    background-color: #f39c12;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #d78c0f;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.no-data {
+    text-align: center;
+    padding: 1rem;
+    color: #999;
+}
+
+.error {
+    color: #c0392b;
+    text-align: center;
+    margin-bottom: 1rem;
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/MealForm.css";
 
 export default function EditMeal() {
     const { mealId } = useParams();
@@ -9,7 +10,6 @@ export default function EditMeal() {
     const [formData, setFormData] = useState({ name: "", price: "" });
     const [error, setError] = useState("");
 
-    // Load meal data on mount
     useEffect(() => {
         const fetchMeal = async () => {
             try {
@@ -45,11 +45,11 @@ export default function EditMeal() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "500px", margin: "0 auto" }}>
+        <div className="meal-form-container">
             <h2>Edit Meal</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form className="meal-form" onSubmit={handleSubmit}>
                 <label>
                     Name:
                     <input
@@ -73,9 +73,7 @@ export default function EditMeal() {
                     />
                 </label>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Update Meal
-                </button>
+                <button type="submit">Update Meal</button>
             </form>
         </div>
     );

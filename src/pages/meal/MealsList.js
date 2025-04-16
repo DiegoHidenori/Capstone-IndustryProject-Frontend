@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/MealsList.css";
 
 export default function MealsList() {
     const [meals, setMeals] = useState([]);
@@ -21,7 +22,7 @@ export default function MealsList() {
             return;
         try {
             await api.delete(`/api/meals/${mealId}`);
-            fetchMeals(); // refresh
+            fetchMeals();
         } catch (err) {
             console.error("Error deleting meal:", err);
             setError("Failed to delete meal.");
@@ -33,18 +34,19 @@ export default function MealsList() {
     }, []);
 
     return (
-        <div style={{ padding: "2rem" }}>
-            <h2>All Meals</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+        <div className="meals-list-container">
+            <h2>Meal Management</h2>
+            {error && <p className="error">{error}</p>}
 
-            <Link to="/meals/create-meal">
-                <button>Add Meal</button>
-            </Link>
+            <div className="meals-actions">
+                <Link to="/meals/create-meal">
+                    <button className="primary-btn">➕ Add Meal</button>
+                </Link>
+            </div>
 
-            <table style={{ width: "100%", marginTop: "1rem" }}>
+            <table className="meals-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
                         <th>Price</th>
                         <th>Actions</th>
@@ -53,17 +55,19 @@ export default function MealsList() {
                 <tbody>
                     {meals.map((meal) => (
                         <tr key={meal.mealId}>
-                            <td>{meal.mealId}</td>
                             <td>{meal.name}</td>
                             <td>${parseFloat(meal.price).toFixed(2)}</td>
                             <td>
                                 <Link to={`/meals/${meal.mealId}`}>
-                                    <button>View</button>
-                                </Link>{" "}
+                                    <button className="view-btn">View</button>
+                                </Link>
                                 <Link to={`/meals/${meal.mealId}/edit`}>
-                                    <button>Edit</button>
-                                </Link>{" "}
-                                <button onClick={() => deleteMeal(meal.mealId)}>
+                                    <button className="edit-btn">Edit</button>
+                                </Link>
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => deleteMeal(meal.mealId)}
+                                >
                                     Delete
                                 </button>
                             </td>
@@ -71,7 +75,9 @@ export default function MealsList() {
                     ))}
                     {meals.length === 0 && (
                         <tr>
-                            <td colSpan="4">No meals found.</td>
+                            <td colSpan="4" className="no-data">
+                                No meals found.
+                            </td>
                         </tr>
                     )}
                 </tbody>
