@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/DiscountDetails.css";
 
 export default function DiscountDetails() {
     const { discountId } = useParams();
@@ -21,11 +22,11 @@ export default function DiscountDetails() {
         fetchDiscount();
     }, [discountId]);
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    if (error) return <p className="error">{error}</p>;
     if (!discount) return <p>Loading...</p>;
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
+        <div className="discount-details-container">
             <h2>Discount Details</h2>
 
             <p>
@@ -41,14 +42,14 @@ export default function DiscountDetails() {
                 <strong>Type:</strong> {discount.discountType}
             </p>
             <p>
-                <strong>Value:</strong>
+                <strong>Value:</strong>{" "}
                 {discount.discountType === "percentage"
                     ? `${discount.discountValue}%`
                     : `$${parseFloat(discount.discountValue).toFixed(2)}`}
             </p>
 
             <Link to="/discounts">
-                <button style={{ marginTop: "1rem" }}>Back to Discounts</button>
+                <button className="back-button">Back to Discounts</button>
             </Link>
         </div>
     );

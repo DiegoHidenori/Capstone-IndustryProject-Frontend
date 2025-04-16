@@ -1,0 +1,67 @@
+.discount-form-container {
+    max-width: 550px;
+    margin: 2rem auto;
+    background: #f8f7f3;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    color: #2f3e2e;
+}
+
+.discount-form-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #446d53;
+    text-align: center;
+}
+
+.discount-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.discount-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    color: #3b4b39;
+}
+
+.discount-form input[type="text"],
+.discount-form input[type="number"],
+.discount-form select,
+.discount-form textarea {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #c7d1c5;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: #f4f3f0;
+}
+
+.discount-form textarea {
+    min-height: 80px;
+}
+
+button[type="submit"] {
+    padding: 0.7rem 1.2rem;
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #4b7253;
+}
+
+.error {
+    color: #c0392b;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/DiscountForm.css";
 
 export default function EditDiscount() {
     const { discountId } = useParams();
@@ -75,11 +76,11 @@ export default function EditDiscount() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "500px", margin: "0 auto" }}>
+        <div className="discount-form-container">
             <h2>Edit Discount #{discountId}</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="discount-form">
                 <label>
                     Name:
                     <input
@@ -125,9 +126,7 @@ export default function EditDiscount() {
                     />
                 </label>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Update Discount
-                </button>
+                <button type="submit">Update Discount</button>
             </form>
         </div>
     );

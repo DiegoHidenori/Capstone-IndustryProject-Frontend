@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/DiscountsList.css";
 
 export default function DiscountsList() {
     const [discounts, setDiscounts] = useState([]);
@@ -21,7 +22,7 @@ export default function DiscountsList() {
             return;
         try {
             await api.delete(`/api/discounts/${discountId}`);
-            fetchDiscounts(); // refresh list
+            fetchDiscounts();
         } catch (err) {
             console.error("Error deleting discount:", err);
             setError("Failed to delete discount.");
@@ -33,18 +34,17 @@ export default function DiscountsList() {
     }, []);
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="discounts-list-container">
             <h2>All Discounts</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
             <Link to="/discounts/create-discount">
-                <button>Add Discount</button>
+                <button className="add-discount-btn">Add Discount</button>
             </Link>
 
-            <table style={{ width: "100%", marginTop: "1rem" }}>
+            <table className="discounts-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
                         <th>Type</th>
                         <th>Value</th>
@@ -54,7 +54,6 @@ export default function DiscountsList() {
                 <tbody>
                     {discounts.map((d) => (
                         <tr key={d.discountId}>
-                            <td>{d.discountId}</td>
                             <td>{d.name}</td>
                             <td>{d.discountType}</td>
                             <td>
@@ -64,14 +63,15 @@ export default function DiscountsList() {
                                           2
                                       )}`}
                             </td>
-                            <td>
+                            <td className="actions-cell">
                                 <Link to={`/discounts/${d.discountId}`}>
-                                    <button>View</button>
-                                </Link>{" "}
+                                    <button className="view-btn">View</button>
+                                </Link>
                                 <Link to={`/discounts/${d.discountId}/edit`}>
-                                    <button>Edit</button>
-                                </Link>{" "}
+                                    <button className="edit-btn">Edit</button>
+                                </Link>
                                 <button
+                                    className="delete-btn"
                                     onClick={() => deleteDiscount(d.discountId)}
                                 >
                                     Delete
@@ -81,7 +81,9 @@ export default function DiscountsList() {
                     ))}
                     {discounts.length === 0 && (
                         <tr>
-                            <td colSpan="5">No discounts found.</td>
+                            <td colSpan="5" className="no-data">
+                                No discounts found.
+                            </td>
                         </tr>
                     )}
                 </tbody>

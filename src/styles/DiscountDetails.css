@@ -1,0 +1,48 @@
+.discount-details-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #f8f7f3;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    color: #2f3e2e;
+}
+
+.discount-details-container h2 {
+    font-size: 1.8rem;
+    color: #446d53;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.discount-details-container p {
+    margin: 0.75rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.discount-details-container strong {
+    color: #3b4b39;
+}
+
+.back-button {
+    margin-top: 1.5rem;
+    padding: 0.7rem 1.2rem;
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #4b7253;
+}
+
+.error {
+    text-align: center;
+    color: #c0392b;
+    font-size: 0.9rem;
+}

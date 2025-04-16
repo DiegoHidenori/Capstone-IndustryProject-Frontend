@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/DiscountForm.css";
 
 export default function CreateDiscount() {
     const navigate = useNavigate();
@@ -51,11 +52,11 @@ export default function CreateDiscount() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "500px", margin: "0 auto" }}>
+        <div className="discount-form-container">
             <h2>Add New Discount</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="discount-form">
                 <label>
                     Name:
                     <input
@@ -101,9 +102,7 @@ export default function CreateDiscount() {
                     />
                 </label>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Create Discount
-                </button>
+                <button type="submit">Create Discount</button>
             </form>
         </div>
     );
