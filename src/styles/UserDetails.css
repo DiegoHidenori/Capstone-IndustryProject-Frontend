@@ -1,0 +1,88 @@
+.user-details-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #f8f7f3;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    color: #2f3e2e;
+}
+
+.user-details-container h2 {
+    font-size: 1.8rem;
+    color: #446d53;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.user-field {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+}
+
+.promotion-section {
+    margin-top: 2rem;
+    background-color: #eef1ee;
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+.promotion-section h3 {
+    margin-bottom: 0.5rem;
+    color: #446d53;
+}
+
+.promotion-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.promotion-controls select {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #c7d1c5;
+    border-radius: 0.5rem;
+    background-color: #f4f3f0;
+    font-size: 1rem;
+}
+
+button {
+    padding: 0.6rem 1rem;
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #4b7253;
+}
+
+.back-btn {
+    margin-left: 1rem;
+    background-color: #a9a79e;
+}
+
+.back-btn:hover {
+    background-color: #8d8b82;
+}
+
+.user-actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.success {
+    margin-top: 0.5rem;
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+.error {
+    color: #c0392b;
+    text-align: center;
+    margin-bottom: 1rem;
+}

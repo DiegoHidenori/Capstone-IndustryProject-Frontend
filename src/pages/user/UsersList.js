@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/UsersList.css";
 
 export default function UsersList() {
     const [users, setUsers] = useState([]);
@@ -21,7 +22,7 @@ export default function UsersList() {
             return;
         try {
             await api.delete(`/api/users/${userId}`);
-            fetchUsers(); // Refresh after deletion
+            fetchUsers();
         } catch (err) {
             console.error("Error deleting user:", err);
             setError("Failed to delete user.");
@@ -33,11 +34,11 @@ export default function UsersList() {
     }, []);
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="users-list-container">
             <h2>All Users</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <table style={{ width: "100%", marginTop: "1rem" }}>
+            <table className="users-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -56,12 +57,15 @@ export default function UsersList() {
                             <td>{user.role}</td>
                             <td>
                                 <Link to={`/users/${user.userId}`}>
-                                    <button>View</button>
-                                </Link>{" "}
+                                    <button className="view-btn">View</button>
+                                </Link>
                                 <Link to={`/users/${user.userId}/edit`}>
-                                    <button>Edit</button>
-                                </Link>{" "}
-                                <button onClick={() => deleteUser(user.userId)}>
+                                    <button className="edit-btn">Edit</button>
+                                </Link>
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => deleteUser(user.userId)}
+                                >
                                     Delete
                                 </button>
                             </td>
@@ -69,7 +73,9 @@ export default function UsersList() {
                     ))}
                     {users.length === 0 && (
                         <tr>
-                            <td colSpan="5">No users found.</td>
+                            <td colSpan="5" className="no-users">
+                                No users found.
+                            </td>
                         </tr>
                     )}
                 </tbody>

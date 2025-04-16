@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import "../../styles/EditUser.css";
 
 export default function EditUser() {
     const { userId } = useParams();
@@ -13,7 +14,7 @@ export default function EditUser() {
         email: "",
         phone: "",
         billingAddress: "",
-        password: "", // optional
+        password: "",
     });
 
     const [error, setError] = useState("");
@@ -30,7 +31,7 @@ export default function EditUser() {
                     email: u.email || "",
                     phone: u.phone || "",
                     billingAddress: u.billingAddress || "",
-                    password: "", // don't pre-fill password
+                    password: "",
                 });
             } catch (err) {
                 console.error("Error fetching user:", err);
@@ -67,11 +68,11 @@ export default function EditUser() {
     };
 
     return (
-        <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
+        <div className="edit-user-container">
             <h2>Edit User #{userId}</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error">{error}</p>}
 
-            <form onSubmit={handleSubmit}>
+            <form className="edit-user-form" onSubmit={handleSubmit}>
                 <label>
                     First Name:
                     <input
@@ -145,9 +146,7 @@ export default function EditUser() {
                     />
                 </label>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Save Changes
-                </button>
+                <button type="submit">Save Changes</button>
             </form>
         </div>
     );

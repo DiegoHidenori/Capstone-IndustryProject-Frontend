@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../utils/api";
 import { jwtDecode } from "jwt-decode";
+import "../../styles/UserDetails.css";
 
 export default function UserDetails() {
     const { userId } = useParams();
@@ -10,6 +11,11 @@ export default function UserDetails() {
     const [promotionRole, setPromotionRole] = useState("");
     const [message, setMessage] = useState("");
     const [currentUser, setCurrentUser] = useState({});
+
+    useEffect(() => {
+        fetchUser();
+        fetchLoggedInUser();
+    }, [userId]);
 
     const fetchUser = async () => {
         try {
@@ -24,15 +30,9 @@ export default function UserDetails() {
     const fetchLoggedInUser = () => {
         const token = localStorage.getItem("accessToken");
         if (!token) return;
-
         const decoded = jwtDecode(token);
         setCurrentUser(decoded);
     };
-
-    useEffect(() => {
-        fetchUser();
-        fetchLoggedInUser();
-    }, [userId]);
 
     const handlePromotion = async () => {
         try {
@@ -40,7 +40,7 @@ export default function UserDetails() {
                 role: promotionRole,
             });
             setMessage(`User promoted to ${promotionRole}`);
-            fetchUser(); // Refresh user data
+            fetchUser();
         } catch (err) {
             console.error("Promotion failed:", err);
             setMessage(
@@ -50,7 +50,7 @@ export default function UserDetails() {
         }
     };
 
-    if (error) return <p style={{ color: "red" }}>{error}</p>;
+    if (error) return <p className="error">{error}</p>;
     if (!user) return <p>Loading...</p>;
 
     const canPromote =
@@ -59,67 +59,63 @@ export default function UserDetails() {
     const promotionOptions =
         currentUser.role === "admin"
             ? ["guest", "staff", "admin"]
-            : ["guest", "staff"]; // staff cannot promote to admin
+            : ["guest", "staff"];
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div className="user-details-container">
             <h2>User Details</h2>
-
-            <p>
+            <div className="user-field">
                 <strong>ID:</strong> {user.userId}
-            </p>
-            <p>
+            </div>
+            <div className="user-field">
                 <strong>Name:</strong> {user.firstName} {user.middleName || ""}{" "}
                 {user.lastName}
-            </p>
-            <p>
+            </div>
+            <div className="user-field">
                 <strong>Email:</strong> {user.email}
-            </p>
-            <p>
+            </div>
+            <div className="user-field">
                 <strong>Phone:</strong> {user.phone || "N/A"}
-            </p>
-            <p>
+            </div>
+            <div className="user-field">
                 <strong>Billing Address:</strong> {user.billingAddress || "N/A"}
-            </p>
-            <p>
+            </div>
+            <div className="user-field">
                 <strong>Role:</strong> {user.role}
-            </p>
+            </div>
 
             {canPromote && (
-                <div style={{ marginTop: "1.5rem" }}>
+                <div className="promotion-section">
                     <h3>Promote User</h3>
-                    <select
-                        value={promotionRole}
-                        onChange={(e) => setPromotionRole(e.target.value)}
-                    >
-                        <option value="">Select new role</option>
-                        {promotionOptions.map((role) => (
-                            <option key={role} value={role}>
-                                {role}
-                            </option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={handlePromotion}
-                        style={{ marginLeft: "0.5rem" }}
-                        disabled={!promotionRole}
-                    >
-                        Promote
-                    </button>
-                    {message && (
-                        <p style={{ marginTop: "0.5rem", color: "green" }}>
-                            {message}
-                        </p>
-                    )}
+                    <div className="promotion-controls">
+                        <select
+                            value={promotionRole}
+                            onChange={(e) => setPromotionRole(e.target.value)}
+                        >
+                            <option value="">Select new role</option>
+                            {promotionOptions.map((role) => (
+                                <option key={role} value={role}>
+                                    {role}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            onClick={handlePromotion}
+                            disabled={!promotionRole}
+                        >
+                            Promote
+                        </button>
+                    </div>
+                    {message && <p className="success">{message}</p>}
                 </div>
             )}
 
-            <div style={{ marginTop: "2rem" }}>
+            <div className="user-actions">
                 <Link to={`/users/${user.userId}/edit`}>
                     <button>Edit</button>
                 </Link>
                 <Link to="/users">
-                    <button style={{ marginLeft: "1rem" }}>Back</button>
+                    <button className="back-btn">Back</button>
                 </Link>
             </div>
         </div>
