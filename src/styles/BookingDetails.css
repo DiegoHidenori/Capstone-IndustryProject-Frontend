@@ -1,25 +1,24 @@
-
 .booking-details {
     max-width: 800px;
     margin: 2rem auto;
-    background: #ffffff;
+    background: #f8f7f3; /* sandstone ivory */
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
+    color: #2f3e2e;
 }
 
 .booking-details h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: #446d53; /* warm forest green */
 }
 
 .booking-details h4 {
     margin-top: 2rem;
-    color: #2c3e50;
-    border-bottom: 2px solid #ecf0f1;
+    color: #446d53;
+    border-bottom: 2px solid #e1e1dd;
     padding-bottom: 0.5rem;
 }
 
@@ -41,7 +40,7 @@
     display: inline-block;
     margin-bottom: 1rem;
     padding: 0.5rem 1rem;
-    background: #3498db;
+    background: #6a8f72; /* soft sage */
     color: white;
     border: none;
     border-radius: 8px;
@@ -50,7 +49,7 @@
 }
 
 .back-btn:hover {
-    background: #2980b9;
+    background: #4b7253;
 }
 
 .invoice-status {
@@ -61,16 +60,42 @@
 }
 
 .invoice-status.pending {
-    background-color: #f39c12;
+    background-color: #d4a82c; /* golden yellow */
     color: white;
 }
 
-.invoice-status.paid {
-    background-color: #2ecc71;
+.invoice-status.deposit_paid {
+    background-color: #7cb77e; /* light moss green */
     color: white;
 }
 
-.invoice-status.overdue {
-    background-color: #e74c3c;
+.invoice-status.fully_paid {
+    background-color: #4b7253; /* deeper olive */
     color: white;
+}
+
+.payment-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.payment-actions button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #6a8f72;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.payment-actions button:hover {
+    background-color: #4b7253;
+}
+
+.payment-actions button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }

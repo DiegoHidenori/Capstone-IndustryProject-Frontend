@@ -13,7 +13,12 @@ export default function RoomMap({ selectedRooms, onRoomClick }) {
             const svg = containerRef.current.querySelector("svg");
             if (!svg) return;
 
-            // const roomElements = svg.querySelectorAll("[data-room-id]");
+            svg.setAttribute("width", "100%");
+            svg.setAttribute("height", "auto");
+            svg.style.maxWidth = "900px";
+            svg.style.display = "block";
+            svg.style.margin = "0 auto";
+
             const roomGroups = svg.querySelectorAll("g[data-room-id]");
 
             roomGroups.forEach((group) => {
@@ -23,23 +28,17 @@ export default function RoomMap({ selectedRooms, onRoomClick }) {
                 group.classList.add("room-shape");
 
                 group
-                    .querySelectorAll("rect, path, polygon, circle")
+                    .querySelectorAll("rect, path, polygon, circle, ellipse")
                     .forEach((shape) => {
                         shape.setAttribute(
                             "fill",
                             isSelected ? "#28a745" : "#78b0a0"
                         );
+                        shape.removeAttribute("stroke");
+                        shape.removeAttribute("stroke-width");
                     });
 
                 group.addEventListener("click", () => onRoomClick(roomId));
-                // // Apply fill color and class based on selection
-                // el.setAttribute("fill", isSelected ? "#28a745" : "#78b0a0");
-                // el.classList.toggle("selected", isSelected);
-
-                // // Handle room clicks
-                // el.addEventListener("click", () => {
-                //     onRoomClick(parsedId);
-                // });
             });
         };
 

@@ -1,3 +1,41 @@
+/* Dashboard.css */
+
 .dashboard-container {
     padding: 2rem;
+    background-color: #f8f7f3; /* sandstone ivory */
+    color: #2f3e2e; /* deep earthy green */
+    min-height: 100vh;
+}
+
+.dashboard-container h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #446d53; /* richer sage */
+}
+
+.dashboard-container p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+/* Utility styles */
+.loading {
+    color: #777;
+    padding: 1rem;
+}
+
+.error {
+    color: #c0392b;
+    background-color: #ffe9e9;
+    padding: 1rem;
+    border: 1px solid #e0a6a6;
+    border-radius: 5px;
+    margin: 1rem 0;
 }

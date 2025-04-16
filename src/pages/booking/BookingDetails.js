@@ -11,22 +11,48 @@ export default function BookingDetails() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchBooking = async () => {
-            try {
-                const res = await api.get(`/api/bookings/${bookingId}`);
-                setBooking(res.data);
-            } catch (err) {
-                console.error("Failed to fetch booking", err);
-                setError("Could not load booking details.");
-            }
-        };
+    const fetchBooking = async () => {
+        try {
+            const res = await api.get(`/api/bookings/${bookingId}`);
+            setBooking(res.data);
+        } catch (err) {
+            console.error("Failed to fetch booking", err);
+            setError("Could not load booking details.");
+        }
+    };
 
+    useEffect(() => {
         fetchBooking();
     }, [bookingId]);
 
     if (error) return <p style={{ color: "red" }}>{error}</p>;
     if (!booking) return <p>Loading...</p>;
+
+    const handlePayment = async (paymentType) => {
+        try {
+            const res = await api.post("/api/payments/checkout", {
+                invoiceId: booking.Invoice.invoiceId,
+                paymentType,
+                amountPaid:
+                    paymentType === "deposit"
+                        ? booking.Invoice.depositAmount
+                        : booking.Invoice.totalAmount -
+                          booking.Invoice.depositAmount,
+            });
+
+            alert(
+                `Payment started (${paymentType}). Transaction ID: ${res.data.transactionId}. Please wait for confirmation.`
+            );
+
+            // Optional: Poll or wait, then refresh
+            setTimeout(() => {
+                fetchBooking();
+            }, 2500);
+        } catch (err) {
+            console.error("Payment failed", err);
+            alert("Failed to initiate payment.");
+        }
+    };
 
     return (
         <div className="booking-details">
@@ -110,21 +136,46 @@ export default function BookingDetails() {
                 ))}
             </ul>
 
-            <h4>Invoice</h4>
-            <p>
-                <strong>Status:</strong>{" "}
-                <span className={`invoice-status ${booking.Invoice?.status}`}>
-                    {booking.Invoice?.status}
-                </span>
-            </p>
-            <p>
-                <strong>Total:</strong>{" "}
-                {formatCurrency(booking.Invoice?.totalAmount)}
-            </p>
-            <p>
-                <strong>Deposit:</strong>{" "}
-                {formatCurrency(booking.Invoice?.depositAmount)}
-            </p>
+            {booking.Invoice && (
+                <>
+                    <h4>Invoice</h4>
+                    <p>
+                        <strong>Status:</strong>{" "}
+                        <span
+                            className={`invoice-status ${booking.Invoice.status}`}
+                        >
+                            {booking.Invoice.status}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Total:</strong>{" "}
+                        {formatCurrency(booking.Invoice.totalAmount)}
+                    </p>
+                    <p>
+                        <strong>Deposit:</strong>{" "}
+                        {formatCurrency(booking.Invoice.depositAmount)}
+                    </p>
+
+                    {/* ✅ Payment Buttons */}
+                    {booking.Invoice.status !== "fully_paid" && (
+                        <div className="payment-actions">
+                            <button
+                                onClick={() => handlePayment("deposit")}
+                                disabled={
+                                    booking.Invoice.status === "deposit_paid"
+                                }
+                            >
+                                Pay Deposit
+                            </button>
+                            <button
+                                onClick={() => handlePayment("final_payment")}
+                            >
+                                Pay Final Amount
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
         </div>
     );
 }

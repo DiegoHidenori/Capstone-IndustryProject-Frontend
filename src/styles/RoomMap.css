@@ -1,18 +1,58 @@
+.room-map-container svg {
+    width: 100%;
+    max-width: 900px; /* You can increase this value */
+    height: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+.room-map-container {
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    background-color: #f8f7f3;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.room-map-container h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #4b7253;
+    font-weight: 600;
+}
+
 .room-shape {
     cursor: pointer;
-    transition: fill 0.2s ease, stroke 0.2s ease;
+    transition: fill 0.3s ease, stroke 0.3s ease;
 }
 
-.room-shape.selected {
-    fill: #28a745 !important;
-    stroke: #155724 !important;
-    stroke-width: 2px;
+.room-shape:hover rect,
+.room-shape:hover path,
+.room-shape:hover polygon,
+.room-shape:hover ellipse,
+.room-shape:hover circle {
+    stroke: #2f3e2e;
+    stroke-width: 2;
 }
 
-.room-label {
-    font-weight: normal;
+/* Highlight selected rooms */
+.room-shape.selected rect,
+.room-shape.selected path,
+.room-shape.selected polygon,
+.room-shape.selected ellipse,
+.room-shape.selected circle {
+    fill: #4b7253 !important;
 }
 
-.room-shape + text {
+/* Text styling for room labels */
+svg text {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+    text-anchor: middle;
+    dominant-baseline: middle;
     pointer-events: none;
+    fill: #2f3e2e;
 }

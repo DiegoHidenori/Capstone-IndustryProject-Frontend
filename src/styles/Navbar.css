@@ -1,37 +1,40 @@
-nav {
+.navbar {
+    background-color: #f8f7f3; /* sandstone ivory */
+    color: #2f3e2e;
+    padding: 1rem 2rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background-color: #1f2937; /* dark gray */
-    padding: 0.75rem 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-nav a,
-nav button {
-    color: white;
-    text-decoration: none;
-    margin-left: 1rem;
-    font-weight: 500;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.2s;
-    font-size: 1rem;
-}
-
-nav a:hover,
-nav button:hover {
-    color: #3b82f6; /* Tailwind blue-500 */
-}
-
-nav button {
-    font-family: inherit;
-}
-
-.nav-left,
-.nav-right {
-    display: flex;
     align-items: center;
-    gap: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.navbar a {
+    color: #6a8f72; /* soft sage */
+    margin: 0 1rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #4b7253;
+}
+
+.navbar-logo a {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #446d53;
+}
+
+.logout-btn {
+    background-color: #6a8f72;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #4b7253;
 }

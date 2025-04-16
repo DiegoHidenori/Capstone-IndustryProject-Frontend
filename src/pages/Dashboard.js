@@ -33,8 +33,8 @@ export default function Dashboard() {
         document.title = "Dashboard";
     }, []);
 
-    if (isLoading) return <p>Loading dashboard...</p>;
-    if (error) return <p style={{ color: "red" }}>Failed to load profile.</p>;
+    if (isLoading) return <p className="loading">Loading dashboard...</p>;
+    if (error) return <p className="error">Failed to load profile.</p>;
 
     return (
         <div className="dashboard-container">
@@ -43,14 +43,7 @@ export default function Dashboard() {
                 <strong>Role:</strong> {profile.role}
             </p>
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "1.5rem",
-                    marginTop: "2rem",
-                }}
-            >
+            <div className="dashboard-grid">
                 {["admin", "staff"].includes(profile.role) && (
                     <>
                         <DashboardCard
