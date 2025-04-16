@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
+import "../styles/AuthForm.css";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -37,9 +38,9 @@ export default function Login() {
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
+        <div className="auth-form-container">
             <h2>Login</h2>
-            <form onSubmit={handleLogin}>
+            <form className="auth-form" onSubmit={handleLogin}>
                 <input
                     type="email"
                     placeholder="Email"
@@ -54,8 +55,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-
-                <label style={{ display: "block", marginTop: "1rem" }}>
+                <label>
                     <input
                         type="checkbox"
                         checked={rememberMe}
@@ -63,16 +63,10 @@ export default function Login() {
                     />
                     Remember me
                 </label>
-
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    style={{ marginTop: "1rem" }}
-                >
+                <button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Logging in..." : "Login"}
                 </button>
-
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p className="error">{error}</p>}
             </form>
         </div>
     );

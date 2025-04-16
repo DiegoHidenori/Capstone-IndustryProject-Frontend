@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
+import "../styles/AuthForm.css";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -33,10 +34,11 @@ export default function Register() {
     };
 
     return (
-        <div>
+        <div className="auth-form-container">
             <h2>Register</h2>
-            <form onSubmit={handleRegister}>
+            <form className="auth-form" onSubmit={handleRegister}>
                 <input
+                    type="text"
                     name="firstName"
                     placeholder="First Name"
                     value={formData.firstName}
@@ -44,6 +46,7 @@ export default function Register() {
                     required
                 />
                 <input
+                    type="text"
                     name="lastName"
                     placeholder="Last Name"
                     value={formData.lastName}
@@ -67,7 +70,7 @@ export default function Register() {
                     required
                 />
                 <button type="submit">Register</button>
-                {error && <p style={{ color: "red" }}>{error}</p>}
+                {error && <p className="error">{error}</p>}
             </form>
         </div>
     );
