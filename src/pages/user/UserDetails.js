@@ -1,52 +1,45 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/api";
-import { jwtDecode } from "jwt-decode";
 import "../../styles/UserDetails.css";
+import { toast } from "react-toastify";
 
 export default function UserDetails() {
     const { userId } = useParams();
+    const { user: currentUser } = useAuth();
     const [user, setUser] = useState(null);
     const [error, setError] = useState("");
     const [promotionRole, setPromotionRole] = useState("");
-    const [message, setMessage] = useState("");
-    const [currentUser, setCurrentUser] = useState({});
+    const [isPromoting, setIsPromoting] = useState(false);
 
     useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await api.get(`/api/users/${userId}`);
+                setUser(res.data);
+            } catch (err) {
+                console.error("Error fetching user:", err);
+                setError("Failed to fetch user.");
+            }
+        };
         fetchUser();
-        fetchLoggedInUser();
     }, [userId]);
 
-    const fetchUser = async () => {
-        try {
-            const res = await api.get(`/api/users/${userId}`);
-            setUser(res.data);
-        } catch (err) {
-            console.error("Error fetching user:", err);
-            setError("Failed to fetch user.");
-        }
-    };
-
-    const fetchLoggedInUser = () => {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-        const decoded = jwtDecode(token);
-        setCurrentUser(decoded);
-    };
-
     const handlePromotion = async () => {
+        if (!promotionRole) return;
+        setIsPromoting(true);
         try {
             await api.patch(`/api/users/${userId}/promote`, {
                 role: promotionRole,
             });
-            setMessage(`User promoted to ${promotionRole}`);
-            fetchUser();
+            toast.success(`User promoted to ${promotionRole}`);
+            setUser((prev) => ({ ...prev, role: promotionRole }));
         } catch (err) {
             console.error("Promotion failed:", err);
-            setMessage(
-                err?.response?.data?.message ||
-                    "Promotion failed. Please try again."
-            );
+            toast.error(err?.response?.data?.message || "Promotion failed");
+        } finally {
+            setIsPromoting(false);
         }
     };
 
@@ -54,10 +47,10 @@ export default function UserDetails() {
     if (!user) return <p>Loading...</p>;
 
     const canPromote =
-        currentUser.role === "admin" || currentUser.role === "staff";
+        currentUser?.role === "admin" || currentUser?.role === "staff";
 
     const promotionOptions =
-        currentUser.role === "admin"
+        currentUser?.role === "admin"
             ? ["guest", "staff", "admin"]
             : ["guest", "staff"];
 
@@ -101,12 +94,11 @@ export default function UserDetails() {
                         </select>
                         <button
                             onClick={handlePromotion}
-                            disabled={!promotionRole}
+                            disabled={!promotionRole || isPromoting}
                         >
-                            Promote
+                            {isPromoting ? "Promoting..." : "Promote"}
                         </button>
                     </div>
-                    {message && <p className="success">{message}</p>}
                 </div>
             )}
 
