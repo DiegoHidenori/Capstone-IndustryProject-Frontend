@@ -8,6 +8,7 @@ import api from "../utils/api";
 
 import { FaBed, FaUserCog, FaTags } from "react-icons/fa";
 import { MdMeetingRoom, MdFastfood } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const fetchProfile = async () => {
     const res = await api.get("/api/auth/me");
@@ -28,7 +29,17 @@ export default function Dashboard() {
 
     useEffect(() => {
         document.title = "Dashboard";
-    }, []);
+
+        if (!isLoading && !error && profile) {
+            toast.success(`Welcome back, ${profile.firstName}!`, {
+                toastId: "welcome-toast",
+            });
+        }
+
+        if (error) {
+            toast.error("Failed to load user profile.");
+        }
+    }, [isLoading, error, profile]);
 
     if (isLoading) return <p className="loading">Loading dashboard...</p>;
     if (error) return <p className="error">Failed to load profile.</p>;

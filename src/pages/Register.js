@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
+import { toast } from "react-toastify";
 import "../styles/AuthForm.css";
 
 export default function Register() {
@@ -12,7 +12,6 @@ export default function Register() {
         email: "",
         password: "",
     });
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -26,10 +25,12 @@ export default function Register() {
         e.preventDefault();
         try {
             await api.post("/api/auth/register", formData);
-            alert("Registration successful!");
+            toast.success("Registration successful!");
             navigate("/login");
         } catch (err) {
-            setError(err.response?.data?.message || "Registration failed");
+            const message =
+                err.response?.data?.message || "Registration failed";
+            toast.error(message);
         }
     };
 
@@ -70,7 +71,6 @@ export default function Register() {
                     required
                 />
                 <button type="submit">Register</button>
-                {error && <p className="error">{error}</p>}
             </form>
         </div>
     );
