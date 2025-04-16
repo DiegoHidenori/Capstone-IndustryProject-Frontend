@@ -25,12 +25,15 @@ import DiscountDetails from "./pages/discount/DiscountDetails";
 import UsersList from "./pages/user/UsersList";
 import UserDetails from "./pages/user/UserDetails";
 import EditUser from "./pages/user/EditUser";
+import ProfileEdit from "./pages/ProfileEdit";
+import Home from "./pages/Home";
 
 function App() {
     return (
         <Router>
             <Navbar />
             <Routes>
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
@@ -70,6 +73,7 @@ function App() {
                     <Route path="/users" element={<UsersList />} />
                     <Route path="/users/:userId" element={<UserDetails />} />
                     <Route path="/users/:userId/edit" element={<EditUser />} />
+                    <Route path="/profile" element={<ProfileEdit />} />
                 </Route>
             </Routes>
             <ToastContainer

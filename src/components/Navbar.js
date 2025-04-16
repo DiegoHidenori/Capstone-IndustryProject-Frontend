@@ -17,22 +17,28 @@ export default function Navbar() {
         <nav className="navbar">
             <div className="nav-left">
                 <div className="navbar-logo">
-                    <Link to="/">Retreat Center</Link>
+                    <a
+                        href="https://sites.google.com/view/qoaca/home"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Retreat Center
+                    </a>
                 </div>
+
+                <Link to="/">Home</Link>
                 {user && <Link to="/dashboard">Dashboard</Link>}
             </div>
 
             <div className="nav-right">
                 <div className="navbar-links">
                     {user ? (
-                        <>
-                            <button
-                                className="btn logout-btn"
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </button>
-                        </>
+                        <button
+                            className="btn logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
                     ) : (
                         <>
                             <Link to="/login">Login</Link>

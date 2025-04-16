@@ -52,6 +52,7 @@ export default function Dashboard() {
             </p>
 
             <div className="dashboard-grid">
+                {/* Admin + Staff */}
                 {["admin", "staff"].includes(profile.role) && (
                     <>
                         <DashboardCard
@@ -82,6 +83,7 @@ export default function Dashboard() {
                     </>
                 )}
 
+                {/* Guest */}
                 {profile.role === "guest" && (
                     <>
                         <DashboardCard
@@ -94,13 +96,15 @@ export default function Dashboard() {
                             icon={MdMeetingRoom}
                             label="New Booking"
                         />
-                        <DashboardCard
-                            to="/profile"
-                            icon={FaUserCog}
-                            label="Manage Profile"
-                        />
                     </>
                 )}
+
+                {/* Shared */}
+                <DashboardCard
+                    to="/profile"
+                    icon={FaUserCog}
+                    label="Manage Profile"
+                />
             </div>
         </div>
     );
