@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
             const decoded = jwtDecode(token);
             const now = Date.now() / 1000;
             if (decoded.exp && decoded.exp < now) {
-                logout();
+                refreshAccessToken();
                 return;
             }
             setUser({ userId: decoded.userId, role: decoded.role });
